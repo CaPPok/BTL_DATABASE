@@ -280,8 +280,268 @@ INSERT INTO Management.VideoBaiGiang (MaTaiLieu, DuongDanFileVideo) VALUES
 -- 2. TESTING: Kiểm tra
 ------------------------------------------------
 
+INSERT INTO Testing.BaiKiemTra (MaLopHoc,MaBaiKiemTra, TenBaiKiemTra, GhiChu,SoLanThu, ThoiLuongLamBai, HeSo, ThoiGianBatDau, ThoiGianKetThuc, MaNguoiTao) VALUES
+-- HK251_CO2013_L01
+('HK251_CO2013_L01', 1	,N'Quiz 1', N'Sinh viên đọc kỹ yêu cầu'							, 2, 10, 0.1,'2025-12-5'	, '2025-12-7'	,'duy.levanVNET'),
+('HK251_CO2013_L01', 2	,N'Quiz 2', N'Sinh viên đọc kỹ yêu cầu'							, 1, 40, 0.1,'2025-11-20'	, '2025-12-7'	,'duy.levanVNET'),
+
+-- HK251_CO3001_L01
+('HK251_CO3001_L01', 1	,N'Quiz 1', N'Kiểm tra chương 1'							, 2, 15, 0.2,'2025-10-6'	, '2025-12-1'	,'bao.nguyenthegiabao01'),
+('HK251_CO3001_L01', 2	,N'Quiz 2', N'Kiểm tra chương 2'							, 2, 15, 0.2,'2025-11-14'	, '2025-12-14'	,'bao.nguyenthegiabao01'),
+('HK251_CO3001_L01', 3	,N'Quiz 3', N'Kiểm tra chương 3'							, 2, 15, 0.1,'2025-12-1'	, '2025-12-30'	,'bao.nguyenthegiabao01'),
+
+--HK242_CO2039_L01	hoang.nguyenlelu99
+('HK242_CO2039_L01', 1	,N'Quiz Review'	, N'Review buổi học'								, 4, 10, 0.1,'2025-9-12'	, '2025-9-13'	,'hoang.nguyenlelu99'),
+('HK242_CO2039_L01', 2	,N'Quiz ôn tập'	, N'Ôn tập nội dung thi CK'							, 4, 30, 0,'2025-12-1'	, '2025-12-12'	,'hoang.nguyenlelu99'),
+
+--HK241_CO2007_L01	hiep.luhoangLHH
+('HK241_CO2007_L01', 1	,N'Quiz C1'	, N'Kiểm tra tự luận'									, 1, 15, 0.1,'2025-11-15'	, '2025-12-1'	,'hiep.luhoangLHH');
 
 
+INSERT INTO Testing.CauHoi(LoaiCauHoi,NoiDungCauHoi,DiemToiDa) VALUES
+(0, N'EERD là gì?',1),
+(0, N'EERD viết tắt là?',1),
+(0, N'Hình vẽ EERD nào sau đây là đún?',1),
+(0, N'Có mấy bước mapping?',1),
+(0, N'Chọn bảng ánh xạ đúng nhất',1),
+(1, N'Liệt kê ít nhất 10 ràng buộc ngữ ngĩa',10),
+(1, N'Liệt kê những thực thể có trong ERD',10);
+
+
+INSERT INTO Testing.CauHoiLKBaiKT(MaCauHoi,MaBaiKiemTra, MaLopHoc) VALUES
+-- HK251_CO2013_L01
+(1,1,'HK251_CO2013_L01'),
+(2,1,'HK251_CO2013_L01'),
+(3,2,'HK251_CO2013_L01'),
+(4,2,'HK251_CO2013_L01'),
+-- HK251_CO3001_L01
+(1,1,'HK251_CO3001_L01'),
+(2,1,'HK251_CO3001_L01'),
+(3,2,'HK251_CO3001_L01'),
+(4,2,'HK251_CO3001_L01'),
+(5,3,'HK251_CO3001_L01'),
+--HK242_CO2039_L01	
+(1,1,'HK242_CO2039_L01'),
+(4,1,'HK242_CO2039_L01'),
+(6,2,'HK242_CO2039_L01'),
+--HK241_CO2007_L01
+(7,1,'HK241_CO2007_L01');
+
+INSERT INTO Testing.TuLuan(MaCauHoi,GoiYTraLoi) VALUES
+(6,'Làm dư không bị trừ điểm'),
+(7,'Xác định tuần tự như ví dụ đã học');
+
+INSERT INTO Testing.TracNghiem(MaCauHoi) VALUES
+(1), (2), (3), (4), (5);
+
+INSERT INTO Testing.DapAn(MaCauHoi,MaDapAn,NoiDung,TinhDungSai) VALUES
+--Dap an cua cau EERD là gì? Câu D đúng
+(1,1,'A',0),
+(1,2,'B',0),
+(1,3,'C',0),
+(1,4,'D',1),
+--Tương tự các câu sau
+(2,1,'A',1),
+(2,2,'B',0),
+(2,3,'C',0),
+(2,4,'D',0),
+--Tương tự các câu sau
+(3,1,'A',1),
+(3,2,'B',0),
+(3,3,'C',0),
+(3,4,'D',0),
+--Tương tự các câu sau
+(4,1,'A',0),
+(4,2,'B',1),
+(4,3,'C',0),
+(4,4,'D',0),
+--Tương tự các câu sau
+(5,1,'A',0),
+(5,2,'B',0),
+(5,3,'C',1),
+(5,4,'D',0);
+
+
+INSERT INTO Testing.LanThu(MaLopHoc,MaBaiKiemTra,MaLanThu,ThoiGianBatDau,ThoiGianKetThuc,MaNguoiLam) VALUES
+-- HK251_CO2013_L01 huy.lugiaHCMUT2   hiep.lehoangGG hiep.nguyenvan123  huy.hoangtheCS2 bao.legia251  duy.luhoangBK1 hoi.banhphuK23
+('HK251_CO2013_L01', 1,1, '2025-12-5 9:23:00','2025-12-5 9:33:00', 'huy.lugiaHCMUT2' ),
+('HK251_CO2013_L01', 1,2, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'huy.lugiaHCMUT2' ),
+('HK251_CO2013_L01', 1,3, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'huy.hoangtheCS2' ),
+('HK251_CO2013_L01', 1,4, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hiep.lehoangGG' ),
+('HK251_CO2013_L01', 1,5, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hiep.nguyenvan123' ),
+('HK251_CO2013_L01', 1,6, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'bao.legia251' ),
+('HK251_CO2013_L01', 1,7, '2025-12-5 9:23:00','2025-12-5 9:33:00', 'bao.legia251' ),
+('HK251_CO2013_L01', 1,8, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+
+-- HK251_CO2013_L01 Bài 2
+('HK251_CO2013_L01', 2,1, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'huy.hoangtheCS2' ),
+('HK251_CO2013_L01', 2,2, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'bao.legia251' ),
+('HK251_CO2013_L01', 2,3, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'duy.luhoangBK1' ),
+('HK251_CO2013_L01', 2,4, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+-- HK251_CO3001_L01 huy.lugiaHCMUT2 hiep.lehoangGG   duy.nguyenthe001  hiep.nguyenvan123  bao.legia251 duy.luhoangBK1 hoi.banhphuK23
+('HK251_CO3001_L01', 1,1, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'huy.lugiaHCMUT2' ),
+('HK251_CO3001_L01', 1,2, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'hiep.lehoangGG' ),
+('HK251_CO3001_L01', 1,3, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'duy.nguyenthe001' ),
+('HK251_CO3001_L01', 1,4, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'hiep.nguyenvan123' ),
+('HK251_CO3001_L01', 1,5, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'bao.legia251' ),
+('HK251_CO3001_L01', 1,6, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'duy.luhoangBK1' ),
+('HK251_CO3001_L01', 1,7, '2025-11-30 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+
+('HK251_CO3001_L01', 2,1, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'huy.lugiaHCMUT2' ),
+('HK251_CO3001_L01', 2,2, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'bao.legia251' ),
+('HK251_CO3001_L01', 2,3, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'duy.luhoangBK1' ),
+('HK251_CO3001_L01', 2,4, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+
+
+('HK251_CO3001_L01', 3,1, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+('HK251_CO3001_L01', 3,2, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+('HK251_CO3001_L01', 3,3, '2025-12-5 9:35:00','2025-12-5 9:45:00', 'hoi.banhphuK23' ),
+
+--HK242_CO2039_L01	Ko đứa nào làm
+
+--HK241_CO2007_L01	-- huy.lugiaHCMUT2  hiep.lehoangGG  duy.nguyenthe001  hiep.nguyenvan123 huy.hoangtheCS2   bao.legia251  duy.luhoangBK1   hoi.banhphuK23
+('HK241_CO2007_L01', 1,1, '2025-11-30 9:35:00','2025-11-30 9:45:00', 'huy.lugiaHCMUT2' ),
+('HK241_CO2007_L01', 1,2, '2025-11-30 9:35:00','2025-11-30 9:45:00', 'bao.legia251' ),
+('HK241_CO2007_L01', 1,3, '2025-11-30 9:35:00','2025-11-30 9:45:00', 'duy.luhoangBK1' );
+
+
+INSERT INTO Testing.CauTraLoi(MaLopHoc,MaBaiKiemTra,MaLanThu,MaCauHoi,MaCauTraLoi,Diem) VALUES
+-- HK251_CO2013_L01 Quiz 1 có 2 câu hỏi 1,2
+('HK251_CO2013_L01', 1,1, 1,1,0),
+('HK251_CO2013_L01', 1,1, 2,1,0),
+('HK251_CO2013_L01', 1,2, 1,2,1 ),
+('HK251_CO2013_L01', 1,2, 2,2,1 ),
+
+
+('HK251_CO2013_L01', 1,3,1,1,1),
+('HK251_CO2013_L01', 1,3,2,1,1),
+('HK251_CO2013_L01', 1,4,1,1,1),
+('HK251_CO2013_L01', 1,4,2,1,1),
+('HK251_CO2013_L01', 1,5,1,1,1),
+('HK251_CO2013_L01', 1,5,2,1,1),
+('HK251_CO2013_L01', 1,6,1,1,1),
+('HK251_CO2013_L01', 1,6,2,1,1),
+('HK251_CO2013_L01', 1,7,1,1,1),
+('HK251_CO2013_L01', 1,7,2,1,1),
+('HK251_CO2013_L01', 1,8,1,1,1),
+('HK251_CO2013_L01', 1,8,2,1,1),
+
+-- HK251_CO2013_L01 Quiz 2 có 2 câu hỏi 3,4
+('HK251_CO2013_L01', 2,1, 3,1,1),
+('HK251_CO2013_L01', 2,1, 4,1,1),
+('HK251_CO2013_L01', 2,2, 3,1,1),
+('HK251_CO2013_L01', 2,2, 4,1,1),
+('HK251_CO2013_L01', 2,3, 3,1,1),
+('HK251_CO2013_L01', 2,3, 4,1,1),
+('HK251_CO2013_L01', 2,4, 3,1,1),
+('HK251_CO2013_L01', 2,4, 4,1,1),
+
+
+-- HK251_CO3001_L01 Quiz 1 có 2 câu 1,2
+
+('HK251_CO3001_L01', 1,1, 1,1,1),
+('HK251_CO3001_L01', 1,1, 2,1,1),
+('HK251_CO3001_L01', 1,2, 1,1,1),
+('HK251_CO3001_L01', 1,2, 2,1,1),
+('HK251_CO3001_L01', 1,3, 1,1,1),
+('HK251_CO3001_L01', 1,3, 2,1,1),
+('HK251_CO3001_L01', 1,4, 1,1,1),
+('HK251_CO3001_L01', 1,4, 2,1,1),
+('HK251_CO3001_L01', 1,5, 1,1,1),
+('HK251_CO3001_L01', 1,5, 2,1,1),
+('HK251_CO3001_L01', 1,6, 1,1,1),
+('HK251_CO3001_L01', 1,6, 2,1,1),
+('HK251_CO3001_L01', 1,7, 1,1,1),
+('HK251_CO3001_L01', 1,7, 2,1,1),
+
+-- HK251_CO3001_L01 Quiz 2 có 2 câu 3,4 
+
+('HK251_CO3001_L01', 2,1, 3,1,1),
+('HK251_CO3001_L01', 2,1, 4,1,1),
+('HK251_CO3001_L01', 2,2, 3,1,1),
+('HK251_CO3001_L01', 2,2, 4,1,1),
+('HK251_CO3001_L01', 2,3, 3,1,1),
+('HK251_CO3001_L01', 2,3, 4,1,1),
+('HK251_CO3001_L01', 2,4, 3,1,1),
+('HK251_CO3001_L01', 2,4, 4,1,1),
+
+-- HK251_CO3001_L01 Quiz 3 có 1 câu  5
+
+('HK251_CO3001_L01', 3,1, 5,1,0 ),
+('HK251_CO3001_L01', 3,1, 5,2,0 ),
+('HK251_CO3001_L01', 3,1, 5,3,1 ),
+--HK242_CO2039_L01	Ko đứa nào làm
+
+--HK241_CO2007_L01	-- huy.lugiaHCMUT2  hiep.lehoangGG  duy.nguyenthe001  hiep.nguyenvan123 huy.hoangtheCS2   bao.legia251  duy.luhoangBK1   hoi.banhphuK23
+--Quiz 1 có câu 7
+('HK241_CO2007_L01', 1,1, 7,1,10),
+('HK241_CO2007_L01', 1,2, 7,1,8),
+('HK241_CO2007_L01', 1,3, 7,1,0);
+
+INSERT INTO Testing.CauTraLoiChiTiet(MaLopHoc,MaBaiKiemTra,MaLanThu,MaCauHoi,MaCauTraLoi,MaDapAn) VALUES
+-- HK251_CO2013_L01 Quiz 1 có 2 câu hỏi 1,2 (D,A)
+('HK251_CO2013_L01', 1,1, 1,1,1),
+('HK251_CO2013_L01', 1,1, 2,1,4),
+('HK251_CO2013_L01', 1,2, 1,2,4 ),
+('HK251_CO2013_L01', 1,2, 2,2,1 ),
+
+('HK251_CO2013_L01', 1,3,1,1,4),
+('HK251_CO2013_L01', 1,3,2,1,1),
+('HK251_CO2013_L01', 1,4,1,1,4),
+('HK251_CO2013_L01', 1,4,2,1,1),
+('HK251_CO2013_L01', 1,5,1,1,4),
+('HK251_CO2013_L01', 1,5,2,1,1),
+('HK251_CO2013_L01', 1,6,1,1,4),
+('HK251_CO2013_L01', 1,6,2,1,1),
+('HK251_CO2013_L01', 1,7,1,1,4),
+('HK251_CO2013_L01', 1,7,2,1,1),
+('HK251_CO2013_L01', 1,8,1,1,4),
+('HK251_CO2013_L01', 1,8,2,1,1),
+
+-- HK251_CO2013_L01 Quiz 2 có 2 câu hỏi 3,4
+('HK251_CO2013_L01', 2,1, 3,1,1),
+('HK251_CO2013_L01', 2,1, 4,1,2),
+('HK251_CO2013_L01', 2,2, 3,1,1),
+('HK251_CO2013_L01', 2,2, 4,1,2),
+('HK251_CO2013_L01', 2,3, 3,1,1),
+('HK251_CO2013_L01', 2,3, 4,1,2),
+('HK251_CO2013_L01', 2,4, 3,1,1),
+('HK251_CO2013_L01', 2,4, 4,1,2),
+
+-- HK251_CO3001_L01 Quiz 1 có 2 câu 1,2
+
+('HK251_CO3001_L01', 1,1, 1,1,4),
+('HK251_CO3001_L01', 1,1, 2,1,1),
+('HK251_CO3001_L01', 1,2, 1,1,4),
+('HK251_CO3001_L01', 1,2, 2,1,1),
+('HK251_CO3001_L01', 1,3, 1,1,4),
+('HK251_CO3001_L01', 1,3, 2,1,1),
+('HK251_CO3001_L01', 1,4, 1,1,4),
+('HK251_CO3001_L01', 1,4, 2,1,1),
+('HK251_CO3001_L01', 1,5, 1,1,4),
+('HK251_CO3001_L01', 1,5, 2,1,1),
+('HK251_CO3001_L01', 1,6, 1,1,4),
+('HK251_CO3001_L01', 1,6, 2,1,1),
+('HK251_CO3001_L01', 1,7, 1,1,4),
+('HK251_CO3001_L01', 1,7, 2,1,1),
+
+-- HK251_CO3001_L01 Quiz 2 có 2 câu 3,4 (A,B)
+
+('HK251_CO3001_L01', 2,1, 3,1,1),
+('HK251_CO3001_L01', 2,1, 4,1,2),
+('HK251_CO3001_L01', 2,2, 3,1,1),
+('HK251_CO3001_L01', 2,2, 4,1,2),
+('HK251_CO3001_L01', 2,3, 3,1,1),
+('HK251_CO3001_L01', 2,3, 4,1,2),
+('HK251_CO3001_L01', 2,4, 3,1,1),
+('HK251_CO3001_L01', 2,4, 4,1,2),
+
+-- HK251_CO3001_L01 Quiz 3 có 1 câu  5(C)
+
+('HK251_CO3001_L01', 3,1, 5,1,1 ),
+('HK251_CO3001_L01', 3,1, 5,2,2 ),
+('HK251_CO3001_L01', 3,1, 5,3,3 );
+--HK242_CO2039_L01	Ko đứa nào làm
 
 
 ------------------------------------------------
