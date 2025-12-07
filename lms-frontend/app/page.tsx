@@ -24,7 +24,7 @@ export default function Home() {
       width={120}
       height={120}
       className="object-contain mb-6 drop-shadow-md cursor-pointer"
-    />
+      />
       {/* Tiêu đề */}
       <h1 className="text-3xl font-bold text-gray-800 mb-3 drop-shadow-md">
         BÀI TẬP LỚN

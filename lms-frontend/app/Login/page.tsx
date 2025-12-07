@@ -32,9 +32,9 @@ const router = useRouter();
 
       // 2. Điều hướng dựa trên Role
       if (data.role === 'SinhVien') {
-        router.push('/MonHoc'); // Tạo trang này sau
+        router.push('/SinhVien/LopHoc'); // Tạo trang này sau
       } else if (data.role === 'GiangVien') {
-        router.push('/lecturer/dashboard'); // Tạo trang này sau
+        router.push('/MonHoc'); // Tạo trang này sau
       } else {
         setError('Tài khoản không có quyền truy cập');
       }

@@ -1,10 +1,16 @@
 package com.example.lms_backend.controller;
 
-import com.example.lms_backend.dto.*;
-import com.example.lms_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.lms_backend.dto.LoginRequest;
+import com.example.lms_backend.dto.LoginResponse;
+import com.example.lms_backend.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -12,23 +18,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     @Autowired
-    private NguoiDungRepository repo;
+    private AuthService authService;
 
     @PostMapping("/Login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-        // Gọi query database
-        var result = repo.checkLogin(req.getMaNguoiDung(), req.getMatKhau());
+        try {
+            // Gọi logic bên Service (đã bao gồm check pass và lấy role)
+            LoginResponse response = authService.login(req.getMaNguoiDung(), req.getMatKhau());
+            
+            // Trả về 200 OK kèm data
+            return ResponseEntity.ok(response);
 
-        if (result.isPresent()) {
-            ILoginResult user = result.get();
-            // Trả về thông tin kèm Role
-            return ResponseEntity.ok(new LoginResponse(
-                user.getMaNguoiDung(), 
-                user.getHoTen(), 
-                user.getRole()
-            ));
-        } else {
-            return ResponseEntity.status(401).body("Sai email hoặc mật khẩu");
+        } catch (RuntimeException e) {
+            // Nếu lỗi (sai pass, không tồn tại user) -> Trả về 401
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 }
