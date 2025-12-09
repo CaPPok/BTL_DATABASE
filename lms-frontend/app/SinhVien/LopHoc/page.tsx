@@ -163,7 +163,7 @@ export default function MyCoursesPage() {
                     <div 
                         key={lop.maLopHoc} 
                         className="bg-white rounded-[5px] shadow-sm border border-gray-200 overflow-hidden hover:shadow-[0px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-[-5px] transition-shadow cursor-pointer flex flex-col group"
-                        onClick={() => alert("Chi tiết lớp: " + lop.maLopHoc)}
+                        onClick={() => router.push(`/SinhVien/LopHoc/${lop.maLopHoc}`)}
                     >
                         <div className={`h-28 ${bgPattern} relative p-4`}>
                             <button className="absolute top-2 right-2 p-1 bg-black/20 text-white rounded hover:bg-black/30">
