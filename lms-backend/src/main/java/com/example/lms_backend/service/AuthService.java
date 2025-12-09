@@ -46,7 +46,7 @@ public class AuthService {
             Object[] row = results.get(0);
             String dbMaNguoiDung = (String) row[0];
             String dbHoTen = (String) row[1];
-            String dbMatKhau = (String) row[2];
+            String dbMatKhau = ((String) row[2]).trim();
             String dbRole = (String) row[3]; // Cột Role do CASE WHEN tạo ra
 
             // 5. Kiểm tra mật khẩu

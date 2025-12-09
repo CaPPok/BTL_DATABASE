@@ -1,4 +1,4 @@
-﻿USE DoAn_LMS;
+﻿USE LMS_DB;
 GO
 CREATE OR ALTER PROCEDURE Management.sp_TimKiemKhoaHoc_LocThongMinh
     @TuKhoaInput NVARCHAR(200) = NULL, -- Input
@@ -58,50 +58,106 @@ GO
 
 EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = N'232', @KieuSapXep = 'MOI_NHAT';
 
-use DoAn_LMS
-go
+USE LMS_DB;
+GO
 
-CREATE OR ALTER PROCEDURE Testing.sp_ThongKeQuiz
-    @Input_MSSV NVARCHAR(200) = NULL,
-    @Input_TrangThai TINYINT = NULL      -- 0: chưa làm, 1: hoàn thành, 2: overdue
+CREATE OR ALTER PROCEDURE Testing.sp_ThongKeDashboard_TongHop
+    @Input_ID NVARCHAR(50) -- Có thể nhập MSSV hoặc MaNguoiDung
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Làm sạch tham số
-    SET @Input_MSSV = LTRIM(RTRIM(ISNULL(@Input_MSSV, '')));
+    -- =============================================
+    -- BƯỚC 1: XÁC ĐỊNH MÃ NGƯỜI DÙNG (MaNguoiDung)
+    -- =============================================
+    DECLARE @MaNguoiDung VARCHAR(50) = NULL;
 
+    -- Ưu tiên tìm theo MSSV trước
+    SELECT @MaNguoiDung = MaNguoiDung 
+    FROM Management.SinhVien 
+    WHERE MaSoSinhVien = @Input_ID;
+
+    -- Nếu không tìm thấy theo MSSV, thử tìm theo MaNguoiDung trực tiếp
+    IF @MaNguoiDung IS NULL
+    BEGIN
+        SELECT @MaNguoiDung = MaNguoiDung 
+        FROM Management.NguoiDung 
+        WHERE MaNguoiDung = @Input_ID;
+    END
+
+    IF @MaNguoiDung IS NULL 
+    BEGIN
+        PRINT N'Không tìm thấy thông tin sinh viên/người dùng.';
+        RETURN;
+    END
+
+    -- =============================================
+    -- BƯỚC 2: TÍNH ĐIỂM VÀ LƯU VÀO BẢNG TẠM (#DiemSoChiTiet)
+    -- =============================================
+    -- Dùng SELECT ... INTO ... để tạo và đổ dữ liệu vào bảng tạm
     SELECT 
-        Quiz.TenBaiKiemTra,
-        Quiz.MaLopHoc,
-        Quiz.TrangThai
- 
-    FROM Testing.BaiKiemTra AS Quiz
-    JOIN Management.LopHoc AS LH 
-        ON Quiz.MaLopHoc = LH.MaLopHoc
-    JOIN Management.ThamGiaLopHoc AS TG 
-        ON TG.MaLopHoc = LH.MaLopHoc
-    JOIN Management.SinhVien AS SV 
-        ON SV.MaNguoiDung = TG.MaNguoiDung
-    WHERE
-        -- Lọc MSSV
-        (
-            @Input_MSSV = '' 
-            OR EXISTS (
-                SELECT 1 
-                FROM STRING_SPLIT(@Input_MSSV, ' ') AS S
-                WHERE S.value <> ''
-                  AND SV.MaSoSinhVien = S.value
-            )
-        )
-        -- Lọc trạng thái
-        AND (
-            @Input_TrangThai IS NULL
-            OR Quiz.TrangThai = @Input_TrangThai
-        )
-    ORDER BY 
-        Quiz.ThoiGianKetThuc ASC;
+        LT.MaLopHoc, 
+        LT.MaBaiKiemTra,
+        MAX(DiemTong.TongDiem) AS DiemCaoNhatCuaBaiQuiz
+    INTO #DiemSoChiTiet -- <--- TẠO BẢNG TẠM TẠI ĐÂY
+    FROM Testing.LanThu LT
+    LEFT JOIN (
+        SELECT MaLopHoc, MaBaiKiemTra, MaLanThu, SUM(Diem) AS TongDiem
+        FROM Testing.CauTraLoi
+        GROUP BY MaLopHoc, MaBaiKiemTra, MaLanThu
+    ) DiemTong ON LT.MaLopHoc = DiemTong.MaLopHoc 
+               AND LT.MaBaiKiemTra = DiemTong.MaBaiKiemTra 
+               AND LT.MaLanThu = DiemTong.MaLanThu
+    WHERE LT.MaNguoiLam = @MaNguoiDung
+    GROUP BY LT.MaLopHoc, LT.MaBaiKiemTra;
+
+    -- =============================================
+    -- BƯỚC 3: TRẢ VỀ KẾT QUẢ 1 - THỐNG KÊ THEO MÔN HỌC
+    -- (Dùng JOIN với bảng tạm #DiemSoChiTiet)
+    -- =============================================
+    SELECT 
+        MH.MaMonHoc,
+        MH.TenMonHoc,
+        COUNT(Q.MaBaiKiemTra) AS TongSoBaiKiemTra,
+        SUM(CASE WHEN DS.MaBaiKiemTra IS NOT NULL THEN 1 ELSE 0 END) AS SoBaiDaLam,
+        AVG(ISNULL(DS.DiemCaoNhatCuaBaiQuiz, 0)) AS DiemTrungBinhMon,
+        MAX(ISNULL(DS.DiemCaoNhatCuaBaiQuiz, 0)) AS DiemCaoNhatMon
+    FROM Management.ThamGiaLopHoc TG
+    JOIN Management.LopHoc LH ON TG.MaLopHoc = LH.MaLopHoc
+    JOIN Management.MonHoc MH ON LH.MaMonHoc = MH.MaMonHoc
+    JOIN Testing.BaiKiemTra Q ON Q.MaLopHoc = LH.MaLopHoc
+    LEFT JOIN #DiemSoChiTiet DS ON Q.MaLopHoc = DS.MaLopHoc AND Q.MaBaiKiemTra = DS.MaBaiKiemTra -- <--- Dùng bảng tạm
+    WHERE TG.MaNguoiDung = @MaNguoiDung
+    GROUP BY MH.MaMonHoc, MH.TenMonHoc
+    HAVING COUNT(Q.MaBaiKiemTra) > 0
+    ORDER BY MH.TenMonHoc;
+
+    -- =============================================
+    -- BƯỚC 4: TRẢ VỀ KẾT QUẢ 2 - DANH SÁCH "NHẮC NHỞ"
+    -- (Vẫn dùng được bảng tạm #DiemSoChiTiet lần nữa)
+    -- =============================================
+    SELECT 
+        Q.TenBaiKiemTra,
+        MH.TenMonHoc,
+        Q.ThoiGianKetThuc AS HanChotNopBai,
+        DATEDIFF(HOUR, GETDATE(), Q.ThoiGianKetThuc) AS SoGioConLai,
+        N'Chưa làm' AS TrangThai
+    FROM Management.ThamGiaLopHoc TG
+    JOIN Management.LopHoc LH ON TG.MaLopHoc = LH.MaLopHoc
+    JOIN Management.MonHoc MH ON LH.MaMonHoc = MH.MaMonHoc
+    JOIN Testing.BaiKiemTra Q ON Q.MaLopHoc = LH.MaLopHoc
+    LEFT JOIN #DiemSoChiTiet DS ON Q.MaLopHoc = DS.MaLopHoc AND Q.MaBaiKiemTra = DS.MaBaiKiemTra -- <--- Dùng lại bảng tạm
+    WHERE TG.MaNguoiDung = @MaNguoiDung
+      AND DS.MaBaiKiemTra IS NULL       -- Chưa có điểm => Chưa làm
+      AND Q.ThoiGianKetThuc > GETDATE() -- Còn hạn
+    ORDER BY Q.ThoiGianKetThuc ASC;
+
+    -- =============================================
+    -- BƯỚC 5: DỌN DẸP
+    -- =============================================
+    DROP TABLE IF EXISTS #DiemSoChiTiet;
+
 END;
 GO
-EXEC Testing.sp_ThongKeQuiz @Input_MSSV= N'1', @Input_TrangThai= 0;
 
+EXEC Testing.sp_ThongKeDashboard_TongHop @Input_ID=2300001;

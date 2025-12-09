@@ -1,8 +1,23 @@
 ﻿-----------------------------------------------------------------------
 -- TẠO BẢNG DỮ LIỆU
 -----------------------------------------------------------------------
-use LMS_DB;
-go
+USE master
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'LMS_DB')
+BEGIN
+    ALTER DATABASE LMS_DB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE LMS_DB;
+END
+GO
+
+-- Tạo lại database mới
+CREATE DATABASE LMS_DB;
+GO
+
+-- Sử dụng database vừa tạo
+USE LMS_DB;
+GO
 -----------------------------------------------------------------------
 -- 1. Schema Management: Chứa bảng Người dùng, Lớp học, Môn học
 -----------------------------------------------------------------------
