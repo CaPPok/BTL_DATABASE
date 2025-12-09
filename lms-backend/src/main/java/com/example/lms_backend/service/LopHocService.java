@@ -3,7 +3,7 @@ package com.example.lms_backend.service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
+
 
 import com.example.lms_backend.dto.LopHocDTO;
 
@@ -31,9 +31,6 @@ public class LopHocService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Value("classpath:sql/LopHoc.sql")
-    private Resource searchSqlResource;
-
     // --- 1. HÀM TÌM KIẾM & SẮP XẾP (Dùng cho cả API tìm kiếm và API xuất Excel) ---
     public List<LopHocDTO> timKiemVaSapXep(String keyword, String sortType, String maNguoiDung) {
         String inputKey = (keyword == null) ? "" : keyword;
@@ -41,10 +38,9 @@ public class LopHocService {
 
         try {
             // Gọi Stored Procedure
-           String sql = "EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = :tuKhoa, @KieuSapXep = :kieuSapXep, @MSSSV = :maSinhVien";
-    
+           String sql = "EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = :tuKhoa, @KieuSapXep = :kieuSapXep, @MaNguoiDungSV = :MaNguoiDungSV";
             Query query = entityManager.createNativeQuery(sql);
-            query.setParameter("maNguoiDung", maNguoiDung);
+            query.setParameter("MaNguoiDungSV", maNguoiDung);
             query.setParameter("tuKhoa", inputKey);
             query.setParameter("kieuSapXep", inputSort);
 

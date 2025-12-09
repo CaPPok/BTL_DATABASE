@@ -37,7 +37,7 @@ export default function Header() {
 
   const navItems = [
     { name: 'Trang chủ', href: '#'},
-    { name: 'Bảng Điều khiển', href: '#' },
+    { name: 'Bảng Điều khiển', href: '/SinhVien/Dashboard' },
     { name: 'Các khoá học của tôi', href: myCoursesLink }, // Link động
     { name: 'BKeL Cũ', href: '#' },
     { name: 'Khóa học', href: '/MonHoc' },

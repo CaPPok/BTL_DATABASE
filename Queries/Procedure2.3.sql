@@ -2,7 +2,8 @@
 GO
 CREATE OR ALTER PROCEDURE Management.sp_TimKiemKhoaHoc_LocThongMinh
     @TuKhoaInput NVARCHAR(200) = NULL, -- Input
-    @KieuSapXep  VARCHAR(20)   = 'TEN_ZA' -- Input từ menu sắp xếp ('TEN_AZ', 'TEN_ZA', 'MOI_NHAT')
+    @KieuSapXep  VARCHAR(20)   = 'TEN_ZA', -- Input từ menu sắp xếp ('TEN_AZ', 'TEN_ZA', 'MOI_NHAT')
+    @MaNguoiDungSV         VARCHAR(20)   =  NULL
 AS
 BEGIN
   --Xóa khoảng trắng thừa 2 đầu và đưa về chuỗi rỗng nếu NULL
@@ -16,12 +17,14 @@ BEGIN
         MH.MaMonHoc
 
     FROM Management.LopHoc LH
+    JOIN Management.ThamGiaLopHoc TG ON TG.MaLopHoc = LH.MaLopHoc
     JOIN Management.MonHoc MH ON LH.MaMonHoc = MH.MaMonHoc
     JOIN Management.GiangVien GV ON LH.MaNguoiDay = GV.MaNguoiDung
     JOIN Management.NguoiDung ND ON GV.MaNguoiDung = ND.MaNguoiDung
 
     WHERE 
-
+        (@MaNguoiDungSV = '' OR TG.MaNguoiDung = @MaNguoiDungSV)
+        AND
         (
             @TuKhoaInput = '' 
             OR
@@ -56,7 +59,7 @@ BEGIN
 END;
 GO
 
-EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = N'232', @KieuSapXep = 'MOI_NHAT';
+EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = N'', @KieuSapXep = 'MOI_NHAT', @MaNguoiDungSV='hoi.banhphuK23';
 
 USE LMS_DB;
 GO
