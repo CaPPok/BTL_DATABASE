@@ -1,7 +1,6 @@
 package com.example.lms_backend.controller;
 
 import java.io.ByteArrayInputStream;
-// import java.io.IOException; // Bỏ dòng này vì ta sẽ bắt Exception chung
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +29,23 @@ public class LopHocController {
     @GetMapping("/tim-kiem")
     public ResponseEntity<?> timKiemKhoaHoc(
         @RequestParam(required = false, defaultValue = "") String search,
-        @RequestParam(required = false, defaultValue = "TEN_AZ") String sort
+        @RequestParam(required = false, defaultValue = "TEN_AZ") String sort,
+        @RequestParam(required = true) String maNguoiDung
     ) {
-        List<LopHocDTO> list = lopHocService.timKiemVaSapXep(search, sort);
+        List<LopHocDTO> list = lopHocService.timKiemVaSapXep(search, sort, maNguoiDung);
         return ResponseEntity.ok(list);
     }
 
     // API Xuất Excel (Đã nâng cấp để bắt lỗi)
     @GetMapping("/export")
     public ResponseEntity<?> exportExcel( // Đổi thành <?> để linh hoạt trả về lỗi
-            @RequestParam(required = false, defaultValue = "") String search,
-            @RequestParam(required = false, defaultValue = "TEN_AZ") String sort
+        @RequestParam(required = false, defaultValue = "") String search,
+        @RequestParam(required = false, defaultValue = "TEN_AZ") String sort,
+        @RequestParam(required = true) String maNguoiDung
     ) {
         try {
             // Gọi Service lấy dữ liệu
-            ByteArrayInputStream in = lopHocService.exportLopHocToExcel(search, sort);
+            ByteArrayInputStream in = lopHocService.exportLopHocToExcel(search, sort, maNguoiDung);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment; filename=DanhSachKhoaHoc.xlsx");

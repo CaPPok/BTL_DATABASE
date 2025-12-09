@@ -27,12 +27,22 @@ export default function MyCoursesPage() {
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("TEN_AZ");
+  const [sortOption, setSortOption] = useState("MOI_NHAT");
 
   const fetchCourses = useCallback((keyword: string, sort: string) => {
     setLoading(true);
+    
+    // LẤY USER TỪ LOCALSTORAGE
+    const storedUser = localStorage.getItem('NguoiDung');
+    if (!storedUser) {
+        // Xử lý chưa đăng nhập (tùy chọn)
+        setLoading(false);
+        return; 
+    }
+    const user = JSON.parse(storedUser);
+
     // Lưu ý: Nếu máy bạn bị lỗi CORS hoặc không tìm thấy server, đổi localhost thành 127.0.0.1
-    fetch(`http://localhost:8080/api/lophoc/tim-kiem?search=${encodeURIComponent(keyword)}&sort=${sort}`)
+    fetch(`http://localhost:8080/api/lophoc/tim-kiem?search=${encodeURIComponent(keyword)}&sort=${sort}&maNguoiDung=${user.maNguoiDung}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Lỗi API: ${res.statusText}`); 
         return res.json();
@@ -60,13 +70,13 @@ export default function MyCoursesPage() {
   }, [searchTerm, sortOption, fetchCourses]); 
 
   // 2. THÊM: Hàm xử lý xuất Excel
-  const handleExport = () => {
-    // Gọi API Export với các tham số tìm kiếm hiện tại
-    // Lưu ý: Đảm bảo Backend đã có endpoint /export như hướng dẫn trước
-    const exportUrl = `http://localhost:8080/api/lophoc/export?search=${encodeURIComponent(searchTerm)}&sort=${sortOption}`;
-    
-    // Mở tab mới để trình duyệt tự tải file về
-    window.open(exportUrl, '_blank');
+const handleExport = () => {
+    const storedUser = localStorage.getItem('NguoiDung');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      const exportUrl = `http://localhost:8080/api/lophoc/export?search=${encodeURIComponent(searchTerm)}&sort=${sortOption}&maNguoiDung=${user.maNguoiDung}`;
+      window.open(exportUrl, '_blank');
+    }
   };
 
   return (
@@ -133,7 +143,7 @@ export default function MyCoursesPage() {
                 return (
                 <div 
                     key={lop.maLopHoc} 
-                    className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group"
+                    className="bg-white rounded-[5px] shadow-sm border border-gray-200 overflow-hidden hover:shadow-[0px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-[-5px] transition-shadow cursor-pointer flex flex-col group"
                     onClick={() => alert("Chi tiết lớp: " + lop.maLopHoc)}
                 >
                     <div className={`h-28 ${bgPattern} relative p-4`}>

@@ -3,14 +3,21 @@ package com.example.lms_backend.service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-// Thư viện Apache POI (Xử lý Excel)
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import com.example.lms_backend.dto.LopHocDTO;
 
@@ -24,15 +31,19 @@ public class LopHocService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Value("classpath:sql/LopHoc.sql")
+    private Resource searchSqlResource;
+
     // --- 1. HÀM TÌM KIẾM & SẮP XẾP (Dùng cho cả API tìm kiếm và API xuất Excel) ---
-    public List<LopHocDTO> timKiemVaSapXep(String keyword, String sortType) {
+    public List<LopHocDTO> timKiemVaSapXep(String keyword, String sortType, String maNguoiDung) {
         String inputKey = (keyword == null) ? "" : keyword;
         String inputSort = (sortType == null || sortType.isEmpty()) ? "TEN_AZ" : sortType;
 
         try {
             // Gọi Stored Procedure
-            String sql = "EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = :tuKhoa, @KieuSapXep = :kieuSapXep";
+            String sql = StreamUtils.copyToString(searchSqlResource.getInputStream(), StandardCharsets.UTF_8);
             Query query = entityManager.createNativeQuery(sql);
+            query.setParameter("maNguoiDung", maNguoiDung);
             query.setParameter("tuKhoa", inputKey);
             query.setParameter("kieuSapXep", inputSort);
 
@@ -59,9 +70,9 @@ public class LopHocService {
     }
 
     // --- 2. HÀM XUẤT EXCEL ---
-    public ByteArrayInputStream exportLopHocToExcel(String keyword, String sortType) throws IOException {
+    public ByteArrayInputStream exportLopHocToExcel(String keyword, String sortType, String maNguoiDung) throws IOException {
         // Lấy dữ liệu từ hàm trên
-        List<LopHocDTO> danhSach = timKiemVaSapXep(keyword, sortType);
+        List<LopHocDTO> danhSach = timKiemVaSapXep(keyword, sortType, maNguoiDung);
 
         // Khởi tạo Workbook (File Excel)
         try (Workbook workbook = new XSSFWorkbook(); 
