@@ -139,7 +139,7 @@ export default function ClassDetailPage() {
                         {/* Nội dung bên trong Mục */}
                         {isExpanded && (
                         <div className="p-2">
-                            {muc.taiLieus.length === 0 ? (
+                            {muc.taiLieus.length == 1 ? (
                                 <div className="p-4 text-gray-400 italic text-sm">Chưa có tài liệu nào trong mục này.</div>
                             ) : (
                                 <ul className="space-y-1">
@@ -151,20 +151,22 @@ export default function ClassDetailPage() {
                                             </div>
 
                                             {/* Thông tin tài liệu */}
-                                            <div className="flex-1 space-y-2 ">
+                                            <div className="space-y-2">
                                                 <a 
                                                 href={tl.linkLienKet} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="text-[#0073B7] font-semibold hover:underline flex items-center gap-2"
+                                                className="text-[#0073B7] space-y-2"
                                                 >
-                                                {tl.tenTaiLieu}
-                                                </a>
+                                                <div className="font-semibold hover:underline">
+                                                  {tl.tenTaiLieu}
+                                                </div>                                                
                                                 {tl.moTa && (
-                                                    <p className="text-sm text-gray-400 font-normal">
-                                                        {tl.moTa}
-                                                    </p>
+                                                  <p className="text-sm text-gray-400 font-normal">
+                                                      {tl.moTa}
+                                                  </p>
                                                 )}
+                                                </a>                                                
                                             </div>
                                         </li>
                                     ))}
