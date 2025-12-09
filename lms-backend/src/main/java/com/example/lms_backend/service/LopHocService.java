@@ -41,7 +41,8 @@ public class LopHocService {
 
         try {
             // Gọi Stored Procedure
-            String sql = StreamUtils.copyToString(searchSqlResource.getInputStream(), StandardCharsets.UTF_8);
+           String sql = "EXEC Management.sp_TimKiemKhoaHoc_LocThongMinh @TuKhoaInput = :tuKhoa, @KieuSapXep = :kieuSapXep, @MSSSV = :maSinhVien";
+    
             Query query = entityManager.createNativeQuery(sql);
             query.setParameter("maNguoiDung", maNguoiDung);
             query.setParameter("tuKhoa", inputKey);
