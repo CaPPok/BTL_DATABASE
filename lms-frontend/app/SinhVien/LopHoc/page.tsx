@@ -144,7 +144,7 @@ const handleExport = () => {
                 <div 
                     key={lop.maLopHoc} 
                     className="bg-white rounded-[5px] shadow-sm border border-gray-200 overflow-hidden hover:shadow-[0px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-[-5px] transition-shadow cursor-pointer flex flex-col group"
-                    onClick={() => alert("Chi tiết lớp: " + lop.maLopHoc)}
+                    onClick={() => router.push(`/SinhVien/LopHoc/${lop.maLopHoc}`)}
                 >
                     <div className={`h-28 ${bgPattern} relative p-4`}>
                         <button className="absolute top-2 right-2 p-1 bg-black/20 text-white rounded hover:bg-black/30">
@@ -154,8 +154,8 @@ const handleExport = () => {
 
                     <div className="p-4 flex flex-col justify-between flex-grow">
                         <div>
-                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1 truncate">
-                                {lop.tenGiangVien} <span className="text-gray-400">({lop.maGV})</span>
+                            <p className="text-xs text-gray-500 font-semibold mb-1 truncate">
+                               <span className="uppercase"> {lop.tenGiangVien} </span> <span className="text-gray-400">({lop.maGV})</span>
                             </p>
                             <h3 className="text-[15px] font-bold text-[#0073B7] leading-snug line-clamp-2 group-hover:underline">
                                 {lop.tenMon}
