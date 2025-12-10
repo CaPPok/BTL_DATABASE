@@ -339,19 +339,26 @@ export default function GiangVienLopHocPage() {
                     return (
                     <div 
                         key={lop.maLopHoc} 
-                        className="bg-white rounded-[5px] shadow-sm border border-gray-200 overflow-hidden hover:shadow-[0px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-[-5px] transition-shadow flex flex-col group relative"
+                        className="bg-white rounded-[5px] shadow-sm border border-gray-200 overflow-hidden hover:shadow-[0px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-[-5px] transition-shadow flex flex-col group relative cursor-pointer"
+                        onClick={() => router.push(`/GiangVien/LopHoc/${lop.maLopHoc}`)}
                     >
                         <div className={`h-28 ${bgPattern} relative p-4`}>
                             <div className="absolute top-2 right-2 flex gap-1">
                                 <button 
-                                  onClick={() => handleSua(lop)}
+                                  onClick={(e) => {
+                          e.stopPropagation();
+                          handleSua(lop);
+                        }}
                                   className="p-1.5 bg-blue-500/80 hover:bg-blue-600 text-white rounded transition-colors"
                                   title="Sửa"
                                 >
                                     <Edit2 size={14} />
                                 </button>
                                 <button 
-                                  onClick={() => handleXoa(lop.maLopHoc)}
+                                  onClick={(e) => {
+                          e.stopPropagation();
+                          handleXoa(lop.maLopHoc);
+                        }}
                                   className="p-1.5 bg-red-500/80 hover:bg-red-600 text-white rounded transition-colors"
                                   title="Xóa"
                                 >
