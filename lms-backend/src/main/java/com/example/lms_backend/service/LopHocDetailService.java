@@ -42,6 +42,34 @@ public class LopHocDetailService {
                 (String) headerRow[2],  // TenGV
                 (String) headerRow[3]  // MaNguoiDung của Giảng viên
             );
+            // Set MaKhaoSat từ headerRow[4]
+            String maKhaoSat = (String) headerRow[4];
+            result.setMaKhaoSat(maKhaoSat);
+
+            // FETCH FULL SURVEY DATA IF EXISTS
+            if (maKhaoSat != null && !maKhaoSat.trim().isEmpty()) {
+                try {
+                    String sqlKhaoSat = "SELECT TenKhaoSat, TenKhaoSat AS MaKhaoSat, MoTa, ThoigianBatDau, ThoiGianKetThuc " +
+                                       "FROM Survey.KhaoSat WHERE TenKhaoSat = :tenKhaoSat";
+                    Query qKhaoSat = entityManager.createNativeQuery(sqlKhaoSat);
+                    qKhaoSat.setParameter("tenKhaoSat", maKhaoSat);
+                    
+                    Object[] khaoSatRow = (Object[]) qKhaoSat.getSingleResult();
+                    if (khaoSatRow != null) {
+                        ClassDetailDTO.KhaoSatDTO khaoSatDTO = new ClassDetailDTO.KhaoSatDTO(
+                            (String) khaoSatRow[1],  // MaKhaoSat (TenKhaoSat)
+                            (String) khaoSatRow[0],  // TenKhaoSat
+                            (String) khaoSatRow[2],  // MoTa
+                            khaoSatRow[3] != null ? khaoSatRow[3].toString() : null,  // ThoigianBatDau
+                            khaoSatRow[4] != null ? khaoSatRow[4].toString() : null   // ThoiGianKetThuc
+                        );
+                        result.setKhaoSat(khaoSatDTO);
+                    }
+                } catch (Exception e) {
+                    // If survey not found, just continue without it
+                    System.err.println("Không tìm thấy khảo sát: " + maKhaoSat);
+                }
+            }
 
             // 2. LẤY NỘI DUNG (MỤC & TÀI LIỆU)
             String sqlContent = StreamUtils.copyToString(contentSql.getInputStream(), StandardCharsets.UTF_8);

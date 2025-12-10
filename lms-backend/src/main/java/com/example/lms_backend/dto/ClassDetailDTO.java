@@ -9,6 +9,8 @@ public class ClassDetailDTO {
     private String tenMonHoc;
     private String tenGiangVien;
     private String maNguoiDung;
+    private String maKhaoSat; // Thêm field khảo sát
+    private KhaoSatDTO khaoSat; // Object khảo sát đầy đủ
     
     // 2. Danh sách các mục (Sections)
     private List<MucTaiLieuDTO> danhSachMuc = new ArrayList<>();
@@ -18,6 +20,32 @@ public class ClassDetailDTO {
         this.tenMonHoc = tenMonHoc;
         this.tenGiangVien = tenGiangVien;
         this.maNguoiDung = maNguoiDung;
+        this.maKhaoSat = null;
+        this.khaoSat = null;
+    }
+
+    // --- Inner Class: Khảo Sát ---
+    public static class KhaoSatDTO {
+        private String maKhaoSat;
+        private String tenKhaoSat;
+        private String moTa;
+        private String thoigianBatDau;
+        private String thoiGianKetThuc;
+
+        public KhaoSatDTO(String maKhaoSat, String tenKhaoSat, String moTa, String thoigianBatDau, String thoiGianKetThuc) {
+            this.maKhaoSat = maKhaoSat;
+            this.tenKhaoSat = tenKhaoSat;
+            this.moTa = moTa;
+            this.thoigianBatDau = thoigianBatDau;
+            this.thoiGianKetThuc = thoiGianKetThuc;
+        }
+
+        // Getter
+        public String getMaKhaoSat() { return maKhaoSat; }
+        public String getTenKhaoSat() { return tenKhaoSat; }
+        public String getMoTa() { return moTa; }
+        public String getThoigianBatDau() { return thoigianBatDau; }
+        public String getThoiGianKetThuc() { return thoiGianKetThuc; }
     }
 
     // --- Inner Class: Mục Tài Liệu ---
@@ -70,6 +98,10 @@ public class ClassDetailDTO {
     public String getMaLopHoc() { return maLopHoc; }
     public String getTenMonHoc() { return tenMonHoc; }
     public String getTenGiangVien() { return tenGiangVien; }
+    public String getMaKhaoSat() { return maKhaoSat; }
+    public void setMaKhaoSat(String maKhaoSat) { this.maKhaoSat = maKhaoSat; }
+    public KhaoSatDTO getKhaoSat() { return khaoSat; }
+    public void setKhaoSat(KhaoSatDTO khaoSat) { this.khaoSat = khaoSat; }
     public List<MucTaiLieuDTO> getDanhSachMuc() { return danhSachMuc; }
     public void addMuc(MucTaiLieuDTO muc) { this.danhSachMuc.add(muc); }
 }

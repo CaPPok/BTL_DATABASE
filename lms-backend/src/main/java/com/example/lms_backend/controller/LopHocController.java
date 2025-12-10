@@ -120,6 +120,7 @@ public class LopHocController {
         try {
             String maMonHoc = request.get("maMonHoc");
             String maNguoiDay = request.get("maNguoiDay");
+            // Note: maKhaoSat sẽ bị bỏ qua, service sẽ luôn giữ nguyên giá trị cũ từ database
 
             lopHocService.suaLopHoc(maLopHoc, maMonHoc, maNguoiDay);
             return ResponseEntity.ok(new ApiResponse("success", "Sửa lớp học thành công!"));

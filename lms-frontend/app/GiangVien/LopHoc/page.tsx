@@ -50,6 +50,7 @@ export default function GiangVienLopHocPage() {
     maLopHoc: '',
     maMonHoc: '',
     maNguoiDay: '',
+    maKhaoSat: '',
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [originalMonHoc, setOriginalMonHoc] = useState<string>(''); // Lưu môn học ban đầu
@@ -157,7 +158,8 @@ export default function GiangVienLopHocPage() {
     setFormData({ 
       maLopHoc: '', 
       maMonHoc: '', 
-      maNguoiDay: currentUser?.maNguoiDung || '' // Tự động điền mã giảng viên
+      maNguoiDay: currentUser?.maNguoiDung || '', // Tự động điền mã giảng viên
+      maKhaoSat: '',
     });
     setEditingId(null);
     setShowModal(true);
@@ -171,6 +173,7 @@ export default function GiangVienLopHocPage() {
       maLopHoc: lop.maLopHoc,
       maMonHoc: lop.maMonHoc,
       maNguoiDay: currentUser?.maNguoiDung || '', // Luôn dùng mã giảng viên hiện tại
+      maKhaoSat: lop.maKhaoSat || '',
     });
     setOriginalMonHoc(lop.maMonHoc); // Lưu môn học ban đầu
     setEditingId(lop.maLopHoc);
@@ -226,13 +229,20 @@ export default function GiangVienLopHocPage() {
         })
         .catch(err => setError("Lỗi kết nối: " + err.message));
     } else {
+      const updatePayload: any = {
+        maMonHoc: formData.maMonHoc,
+        maNguoiDay: formData.maNguoiDay,
+      };
+      
+      // Chỉ gửi maKhaoSat nếu nó có value (không rỗng)
+      if (formData.maKhaoSat && formData.maKhaoSat.trim()) {
+        updatePayload.maKhaoSat = formData.maKhaoSat;
+      }
+      
       fetch(`http://localhost:8080/api/lophoc/update/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          maMonHoc: formData.maMonHoc,
-          maNguoiDay: formData.maNguoiDay,
-        }),
+        body: JSON.stringify(updatePayload),
       })
         .then(res => res.json())
         .then(data => {

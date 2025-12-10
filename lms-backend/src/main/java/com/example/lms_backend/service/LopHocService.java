@@ -177,9 +177,17 @@ public class LopHocService {
     @Transactional
     public void suaLopHoc(String maLopHoc, String maMonHoc, String maNguoiDay) {
         try {
-            String sql = "EXEC Management.PR_UpdateLopHoc @MaLopHoc = :maLopHoc, @MaKhaoSat = NULL, @MaMonHoc = :maMonHoc, @MaNguoiDay = :maNguoiDay";
+            // LUÔN lấy maKhaoSat hiện tại từ database để giữ nguyên (không cho sửa)
+            String sqlGetKhaoSat = "SELECT MaKhaoSat FROM Management.LopHoc WHERE MaLopHoc = :maLopHoc";
+            Query queryGetKhaoSat = entityManager.createNativeQuery(sqlGetKhaoSat);
+            queryGetKhaoSat.setParameter("maLopHoc", maLopHoc);
+            Object existingMaKhaoSat = queryGetKhaoSat.getSingleResult();
+            String maKhaoSat = existingMaKhaoSat != null ? (String) existingMaKhaoSat : null;
+            
+            String sql = "EXEC Management.PR_UpdateLopHoc @MaLopHoc = :maLopHoc, @MaKhaoSat = :maKhaoSat, @MaMonHoc = :maMonHoc, @MaNguoiDay = :maNguoiDay";
             Query query = entityManager.createNativeQuery(sql);
             query.setParameter("maLopHoc", maLopHoc);
+            query.setParameter("maKhaoSat", maKhaoSat);
             query.setParameter("maMonHoc", maMonHoc);
             query.setParameter("maNguoiDay", maNguoiDay);
             query.executeUpdate();
@@ -221,6 +229,30 @@ public class LopHocService {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    // --- 7. HÀM TẠO KHẢO SÁT VÀ LIÊN KẾT VỚI LỚP HỌC ---
+    @Transactional
+    public void createSurveyAndLinkClass(String maLopHoc, String tenKhaoSat, String moTa, java.time.LocalDateTime thoigianBatDau, java.time.LocalDateTime thoiGianKetThuc) {
+        try {
+            // 1. Tạo khảo sát mới
+            String insertSurveySql = "INSERT INTO Survey.KhaoSat (TenKhaoSat, MoTa, ThoigianBatDau, ThoiGianKetThuc) VALUES (:tenKhaoSat, :moTa, :thoigianBatDau, :thoiGianKetThuc)";
+            Query insertQuery = entityManager.createNativeQuery(insertSurveySql);
+            insertQuery.setParameter("tenKhaoSat", tenKhaoSat);
+            insertQuery.setParameter("moTa", moTa);
+            insertQuery.setParameter("thoigianBatDau", thoigianBatDau);
+            insertQuery.setParameter("thoiGianKetThuc", thoiGianKetThuc);
+            insertQuery.executeUpdate();
+
+            // 2. Cập nhật MaKhaoSat cho lớp học
+            String updateLopHocSql = "UPDATE Management.LopHoc SET MaKhaoSat = :tenKhaoSat WHERE MaLopHoc = :maLopHoc";
+            Query updateQuery = entityManager.createNativeQuery(updateLopHocSql);
+            updateQuery.setParameter("tenKhaoSat", tenKhaoSat);
+            updateQuery.setParameter("maLopHoc", maLopHoc);
+            updateQuery.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tạo khảo sát: " + e.getMessage(), e);
         }
     }
 }

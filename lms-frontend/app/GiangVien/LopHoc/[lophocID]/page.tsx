@@ -12,6 +12,7 @@ import {
   Plus,
   Trash2,
   Edit2,
+  X,
 } from 'lucide-react';
 
 // 1. Khai báo kiểu dữ liệu (Khớp với DTO Backend trả về)
@@ -21,6 +22,14 @@ interface TaiLieu {
   loaiTaiLieu: string; // 'pdf', 'video', 'link'
   linkLienKet: string;
   moTa: string;
+}
+
+interface KhaoSat {
+  maKhaoSat: string;
+  tenKhaoSat: string;
+  moTa: string;
+  thoigianBatDau: string;
+  thoiGianKetThuc: string;
 }
 
 interface MucTaiLieu {
@@ -35,6 +44,8 @@ interface ClassDetail {
   tenMonHoc: string;
   tenGiangVien: string;
   maNguoiDung: string;
+  maKhaoSat?: string;
+  khaoSat?: KhaoSat;
   danhSachMuc: MucTaiLieu[];
 }
 
@@ -48,6 +59,17 @@ export default function ClassDetailPage() {
   
   // State để đóng/mở các mục (Mặc định mở hết)
   const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({});
+
+  // State cho modal tạo khảo sát
+  const [showSurveyModal, setShowSurveyModal] = useState(false);
+  const [surveyForm, setSurveyForm] = useState({
+    tenKhaoSat: '',
+    moTa: '',
+    thoigianBatDau: '',
+    thoiGianKetThuc: ''
+  });
+  const [surveyLoading, setSurveyLoading] = useState(false);
+  const [surveyError, setSurveyError] = useState('');
 
   useEffect(() => {
     if (lophocID) {
@@ -79,6 +101,97 @@ export default function ClassDetailPage() {
       ...prev,
       [maMuc]: !prev[maMuc]
     }));
+  };
+
+  const handleOpenSurveyModal = () => {
+    if (classData) {
+      const autoSurveyName = `Khảo sát học phần ${classData.tenMonHoc} (${classData.maLopHoc}) ${classData.tenGiangVien}`;
+      
+      // Ngày giờ bắt đầu mặc định là hiện tại
+      const now = new Date();
+      const startDateString = now.toISOString().slice(0, 16);
+      
+      // Ngày giờ kết thúc mặc định là sau 2 tuần (14 ngày)
+      const endDate = new Date(now);
+      endDate.setDate(endDate.getDate() + 14);
+      const endDateString = endDate.toISOString().slice(0, 16);
+      
+      setSurveyForm({
+        tenKhaoSat: autoSurveyName,
+        moTa: 'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy',
+        thoigianBatDau: startDateString,
+        thoiGianKetThuc: endDateString
+      });
+      setSurveyError('');
+    }
+    setShowSurveyModal(true);
+  };
+
+  const handleCreateSurvey = async () => {
+    setSurveyError('');
+    
+    if (!surveyForm.tenKhaoSat.trim()) {
+      setSurveyError('Vui lòng nhập tên khảo sát');
+      return;
+    }
+
+    if (!surveyForm.thoigianBatDau || !surveyForm.thoiGianKetThuc) {
+      setSurveyError('Vui lòng chọn thời gian bắt đầu và kết thúc');
+      return;
+    }
+
+    const startDate = new Date(surveyForm.thoigianBatDau);
+    const endDate = new Date(surveyForm.thoiGianKetThuc);
+
+    if (endDate <= startDate) {
+      setSurveyError('Thời gian kết thúc phải sau thời gian bắt đầu');
+      return;
+    }
+
+    const daysDiff = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysDiff < 7) {
+      setSurveyError('Khảo sát phải kéo dài ít nhất 7 ngày');
+      return;
+    }
+
+    setSurveyLoading(true);
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/lophoc/${lophocID}/create-khao-sat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tenKhaoSat: surveyForm.tenKhaoSat,
+          moTa: surveyForm.moTa,
+          thoigianBatDau: surveyForm.thoigianBatDau,
+          thoiGianKetThuc: surveyForm.thoiGianKetThuc
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Lỗi tạo khảo sát');
+      }
+
+      const data = await response.json();
+      if (data.data) {
+        setClassData(data.data);
+      }
+
+      setSurveyForm({
+        tenKhaoSat: '',
+        moTa: '',
+        thoigianBatDau: '',
+        thoiGianKetThuc: ''
+      });
+      setShowSurveyModal(false);
+    } catch (err) {
+      setSurveyError(err instanceof Error ? err.message : 'Lỗi không xác định');
+    } finally {
+      setSurveyLoading(false);
+    }
   };
 
   // Hàm chọn icon dựa theo loại file
@@ -128,12 +241,87 @@ export default function ClassDetailPage() {
             <Plus size={18} />
             Thêm mục
           </button>
+
+          {!classData?.maKhaoSat && (
+            <button
+              onClick={handleOpenSurveyModal}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+            >
+              <Plus size={18} />
+              Tạo khảo sát
+            </button>
+          )}
         </div>
 
         <div className="max-w-5xl mx-auto">
           
           {/* DANH SÁCH CÁC MỤC (SECTIONS) */}
           <div className="space-y-6">
+            {/* Khảo Sát */}
+            {classData?.khaoSat && (
+              <div className="bg-white rounded-[20px] shadow-sm border border-gray-200 overflow-hidden">
+                <div className="flex gap-4 mb-3 items-start justify-between p-4">
+                  <div className="flex gap-4 flex-1">
+                    <button 
+                      onClick={() => toggleSection(-1)}
+                      className="p-1 bg-gray-50 border-[2px] border-gray-100 rounded-full hover:bg-gray-100 hover:border-[#0073B7] transition-colors flex-shrink-0"
+                    >
+                      {expandedSections[-1] ? (
+                        <ChevronDown size={24} className="text-[#0073B7]" />
+                      ) : (
+                        <ChevronRight size={24} className="text-[#0073B7]" />
+                      )}
+                    </button>
+                    <div className="space-y-1 flex-1">                            
+                      <h3 className="font-bold text-lg text-gray-800">
+                        {classData.khaoSat.tenKhaoSat}
+                      </h3>
+                      
+                      {classData.khaoSat.moTa && (
+                        <p className="text-sm text-gray-400 font-normal">
+                          {classData.khaoSat.moTa}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        alert('Chức năng chỉnh sửa khảo sát sẽ được triển khai');
+                      }}
+                      className="p-2 hover:bg-blue-100 text-[#0073B7] rounded transition-colors"
+                      title="Chỉnh sửa khảo sát"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm('Bạn chắc chắn muốn xóa khảo sát này?')) {
+                          alert('Chức năng xóa khảo sát sẽ được triển khai');
+                        }
+                      }}
+                      className="p-2 hover:bg-red-100 text-red-600 rounded transition-colors"
+                      title="Xóa khảo sát"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Nội dung khảo sát */}
+                {expandedSections[-1] && (
+                  <div className="px-4 pb-4">
+                    <div className="space-y-2">
+                      <p className="text-sm"><strong>Thời gian bắt đầu:</strong> {new Date(classData.khaoSat.thoigianBatDau).toLocaleString('vi-VN')}</p>
+                      <p className="text-sm"><strong>Thời gian kết thúc:</strong> {new Date(classData.khaoSat.thoiGianKetThuc).toLocaleString('vi-VN')}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {classData.danhSachMuc.map((muc) => {
               const isExpanded = expandedSections[muc.maMuc];
 
@@ -274,6 +462,94 @@ export default function ClassDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal Tạo Khảo Sát */}
+      {showSurveyModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+            <h2 className="text-xl font-bold text-[#0073B7] mb-4">
+              Tạo Khảo Sát
+            </h2>
+
+            {surveyError && (
+              <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                {surveyError}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {/* Tên khảo sát - không thể thay đổi */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tên khảo sát
+                </label>
+                <div className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-200 text-gray-900">
+                  {surveyForm.tenKhaoSat}
+                </div>
+              </div>
+
+              {/* Mô tả */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mô tả
+                </label>
+                <textarea
+                  value={surveyForm.moTa}
+                  onChange={(e) => setSurveyForm({...surveyForm, moTa: e.target.value})}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 bg-blue-50 focus:outline-none focus:border-[#0073B7] focus:bg-white resize-none"
+                  placeholder="Nhập mô tả cho khảo sát"
+                  rows={3}
+                />
+              </div>
+
+              {/* Thời gian bắt đầu */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Thời gian bắt đầu
+                </label>
+                <input
+                  type="datetime-local"
+                  value={surveyForm.thoigianBatDau}
+                  onChange={(e) => setSurveyForm({...surveyForm, thoigianBatDau: e.target.value})}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 bg-blue-50 focus:outline-none focus:border-[#0073B7] focus:bg-white"
+                />
+              </div>
+
+              {/* Thời gian kết thúc */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Thời gian kết thúc
+                </label>
+                <input
+                  type="datetime-local"
+                  value={surveyForm.thoiGianKetThuc}
+                  onChange={(e) => setSurveyForm({...surveyForm, thoiGianKetThuc: e.target.value})}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 bg-blue-50 focus:outline-none focus:border-[#0073B7] focus:bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => {
+                  setShowSurveyModal(false);
+                  setSurveyError('');
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleCreateSurvey}
+                disabled={surveyLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-[#0073B7] rounded hover:bg-[#005a8e] disabled:bg-gray-400"
+              >
+                {surveyLoading ? 'Đang tạo...' : 'Tạo khảo sát'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

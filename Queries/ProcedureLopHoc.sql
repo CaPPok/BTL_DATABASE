@@ -64,8 +64,8 @@ begin try
     begin
         throw 50001, N'[Error]: Mã lớp học này không tồn tại trong cơ sở dữ liệu!', 3
     end
-    -- Check mã khảo sát
-    if @MaKhaoSat is not null or not exists(select 1 from Survey.KhaoSat where TenKhaoSat = @MaKhaoSat)
+    -- Check mã khảo sát (chỉ kiểm tra nếu không NULL)
+    if @MaKhaoSat is not null and not exists(select 1 from Survey.KhaoSat where TenKhaoSat = @MaKhaoSat)
     begin
         throw 50004, N'[Error]: Mã khảo sát không tồn tại trong cơ sở dữ liệu!', 1
     end
@@ -136,6 +136,10 @@ begin
         if exists(select 1 from Management.MucTaiLieu where MaLopHoc = @MaLopHoc)
         begin
             throw 50005, N'[Error]: Lớp học đang có các tài liệu nên không thể xoá!', 5;
+        end
+        if exists(select 1 from Management.LopHoc where MaLopHoc = @MaLopHoc and MaKhaoSat is not null)
+        begin
+            throw 50005, N'[Error]: Lớp học đang có khảo sát nên không thể xoá!', 6;
         end
         -- Delete Lớp học
         delete from Management.LopHoc
