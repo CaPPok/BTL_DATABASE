@@ -34,7 +34,7 @@ const router = useRouter();
       if (data.role === 'SinhVien') {
         router.push('/SinhVien/LopHoc'); // Tạo trang này sau
       } else if (data.role === 'GiangVien') {
-        router.push('/MonHoc'); // Tạo trang này sau
+        router.push('/GiangVien/LopHoc'); // Quản lý lớp học
       } else {
         setError('Tài khoản không có quyền truy cập');
       }

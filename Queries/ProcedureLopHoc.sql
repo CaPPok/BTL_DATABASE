@@ -65,7 +65,7 @@ begin try
         throw 50001, N'[Error]: Mã lớp học này không tồn tại trong cơ sở dữ liệu!', 3
     end
     -- Check mã khảo sát
-    if not exists(select 1 from Survey.KhaoSat where TenKhaoSat = @MaKhaoSat)
+    if @MaKhaoSat is not null or not exists(select 1 from Survey.KhaoSat where TenKhaoSat = @MaKhaoSat)
     begin
         throw 50004, N'[Error]: Mã khảo sát không tồn tại trong cơ sở dữ liệu!', 1
     end
