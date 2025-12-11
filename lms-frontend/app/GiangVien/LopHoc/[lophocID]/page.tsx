@@ -211,7 +211,7 @@ export default function ClassDetailPage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="px-60">
         {/* HEADER với nút quay lại */}
-        <div className="flex items-center justify-between mb-6 pt-4">
+        <div className="flex items-center justify-between mb-6 pt-5">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.back()}
@@ -264,7 +264,7 @@ export default function ClassDetailPage() {
                   <div className="flex gap-4 flex-1">
                     <button 
                       onClick={() => toggleSection(-1)}
-                      className="p-1 bg-gray-50 border-[2px] border-gray-100 rounded-full hover:bg-gray-100 hover:border-[#0073B7] transition-colors flex-shrink-0"
+                      className="p-1 my-6 bg-gray-50 border-[2px] border-gray-100 rounded-full hover:bg-gray-100 hover:border-[#0073B7] transition-colors flex-shrink-0"
                     >
                       {expandedSections[-1] ? (
                         <ChevronDown size={24} className="text-[#0073B7]" />
@@ -333,7 +333,7 @@ export default function ClassDetailPage() {
                     <div className="flex gap-4 flex-1">
                       <button 
                         onClick={() => toggleSection(muc.maMuc)}
-                        className="p-1 bg-gray-50 border-[2px] border-gray-100 rounded-full hover:bg-gray-100 hover:border-[#0073B7] transition-colors flex-shrink-0"
+                        className="p-1 mb-3 mt-3 bg-gray-50 border-[2px] border-gray-100 rounded-full hover:bg-gray-100 hover:border-[#0073B7] transition-colors flex-shrink-0"
                       >
                         {isExpanded ? (
                           <ChevronDown size={24} className="text-[#0073B7]" />

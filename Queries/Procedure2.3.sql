@@ -164,3 +164,9 @@ END;
 GO
 
 EXEC Testing.sp_ThongKeDashboard_TongHop @Input_ID=2300001;
+--Sử dụng mã người dùng
+EXEC Testing.sp_ThongKeDashboard_TongHop @Input_ID='duy.nguyenthe001';
+--Sử dùng mã sinh viên của duy.nguyenthe001
+EXEC Testing.sp_ThongKeDashboard_TongHop @Input_ID=2300003;
+--Sử dụng sinh viên khác
+EXEC Testing.sp_ThongKeDashboard_TongHop @Input_ID='hiep.lehoangGG';

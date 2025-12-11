@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter} from 'next/navigation';
 import { 
   FileText, 
   Video, 
   Link as LinkIcon, 
   ChevronDown, 
   ChevronRight,
+  ArrowLeft,
 } from 'lucide-react';
 
 // 1. Khai báo kiểu dữ liệu (Khớp với DTO Backend trả về)
@@ -37,6 +38,7 @@ interface ClassDetail {
 export default function ClassDetailPage() {
   // Lấy ID từ URL (VD: HK251_CO2013_L01)
   const params = useParams();
+  const router = useRouter();
   const lophocID = params.lophocID;
 
   const [classData, setClassData] = useState<ClassDetail | null>(null);
@@ -92,15 +94,24 @@ export default function ClassDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="px-60">
+        <div className="px-60 pt-5">
             {/* 1. HEADER TÊN LỚP (Giống ảnh Moodle) */}
-            <div className="mb-6">
+            <div className="flex items-center gap-4 mb-6">
+              <button
+                onClick={() => router.back()}
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                title="Quay lại"
+              >
+                <ArrowLeft size={24} className="text-[#0073B7]" />
+              </button>
+              <div>
                 <h1 className="text-2xl font-bold text-[#0073B7]">
-                {classData.tenMonHoc} ({classData.maLopHoc})
+                  {classData.tenMonHoc} ({classData.maLopHoc})
                 </h1>
-                <h1 className="mt-2 text-[14px] font-bold text-gray-400">
-                Giảng viên: {classData.tenGiangVien} ({classData.maNguoiDung})
-                </h1>
+                <h2 className="mt-2 text-[14px] font-bold text-gray-400">
+                  Giảng viên: {classData.tenGiangVien} ({classData.maNguoiDung})
+                </h2>
+              </div>
             </div>
 
             <div className="max-w-5xl mx-auto">

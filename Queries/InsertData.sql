@@ -328,8 +328,8 @@ INSERT INTO Testing.CauHoiLKBaiKT(MaCauHoi,MaBaiKiemTra, MaLopHoc) VALUES
 (7,1,'HK241_CO2007_L01');
 
 INSERT INTO Testing.TuLuan(MaCauHoi,GoiYTraLoi) VALUES
-(6,'Làm dư không bị trừ điểm'),
-(7,'Xác định tuần tự như ví dụ đã học');
+(6,N'Làm dư không bị trừ điểm'),
+(7,N'Xác định tuần tự như ví dụ đã học');
 
 INSERT INTO Testing.TracNghiem(MaCauHoi) VALUES
 (1), (2), (3), (4), (5);
@@ -617,14 +617,23 @@ INSERT INTO Forum.PhanHoi (MaNguoiTaoChuDe, MaDienDan, MaNhom, MaChuDe, MaNguoiP
 -- 4. SURVEY: Khảo sát
 ------------------------------------------------
 INSERT INTO Survey.KhaoSat (TenKhaoSat, MoTa, ThoigianBatDau, ThoiGianKetThuc) VALUES
-(N'Khảo sát học phần Hệ cơ sở Dữ liệu', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Công nghệ phần mềm', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Cấu trúc Dữ liệu và Giải Thuật', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Mạng máy tính', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Lập trình nâng cao', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Kiến trúc máy tính', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Kỹ thuật lập trình', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
-(N'Khảo sát học phần Giải tích 2', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15');
+(N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Cấu trúc Dữ liệu và Giải Thuật HK241_CO2003_L01 Nguyễn Thế Gia Bảo', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Mạng máy tính HK251_CO3093_L01 Nguyễn Lê Lữ Hoàng', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Lập trình nâng cao HK242_CO2039_L01 Nguyễn Lê Lữ Hoàng', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Kiến trúc máy tính HK241_CO2007_L01 Lữ Hoàng Hiệp', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Kỹ thuật lập trình HK232_CO1027_L01 Lữ Hoàng Hiệp', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15'),
+(N'Khảo sát Giải tích 2 HK232_MT1005_L01 Nguyễn Hoàng Bảo', N'Khảo sát ý kiến, nhận xét của sinh viên về lớp học nhằm hỗ trợ cải thiện công tác giảng dạy', '2025-10-01', '2025-10-15');
+ 
+UPDATE L
+SET L.MaKhaoSat = K.TenKhaoSat
+FROM Management.LopHoc L
+JOIN Management.NguoiDung GV ON L.MaNguoiDay = GV.MaNguoiDung
+JOIN Survey.KhaoSat K 
+    ON K.TenKhaoSat LIKE N'%' + L.MaMonHoc + N'%'
+    AND K.TenKhaoSat LIKE N'%' + GV.HoTen + N'%'
+WHERE L.MaKhaoSat IS NULL;
 ------------------------------------------------
 -- 5. EXERCISE: Bài tập
 ------------------------------------------------
@@ -696,3 +705,31 @@ INSERT INTO Exercise.DuongDanTapTinBaiLam (MaNguoiDung, MaSubmission, DuongDanTa
 ('huy.hoangtheCS2', 6, N'https://lms.hcmut.edu.vn/pluginfile.php/1302055/assignsubmission_file/submission_files/1885001/2300005_HoangTheHuy.zip'),
 ('hiep.nguyenvan123', 6, N'https://lms.hcmut.edu.vn/pluginfile.php/1302055/assignsubmission_file/submission_files/1885003/2300004_NguyenVanHiep.zip'),
 ('duy.luhoangBK1', 7, N'https://lms.hcmut.edu.vn/pluginfile.php/1302060/assignsubmission_file/submission_files/1885010/2300007_LuHoangDuy_FixedFeedback.pdf');
+
+--  CauHoikhaoSat
+INSERT INTO Survey.CauHoiKhaoSat (NoiDungCauHoi, LuaChon, MaKhaoSat) VALUES
+(N'Giảng viên có truyền đạt kiến thức rõ ràng, dễ hiểu không?', N'Rất tốt;Tốt;Khá;Trung bình;Yếu', N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'),
+(N'Tài liệu môn học có đáp ứng đủ nhu cầu ôn tập không?', N'Đầy đủ;Tạm ổn;Thiếu nhiều;Không có', N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'),
+(N'Bạn có góp ý gì để cải thiện môn học này không?', NULL, N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'),
+
+(N'Nội dung bài tập lớn có phù hợp với kiến thức đã học?', N'Hoàn toàn phù hợp;Hơi khó;Quá sức;Không liên quan', N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'),
+(N'Sự hỗ trợ của giảng viên trong quá trình làm đồ án?', N'Rất nhiệt tình;Bình thường;Ít hỗ trợ', N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'),
+(N'Đề xuất của bạn về cách tổ chức làm việc nhóm?', NULL, N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'),
+
+(N'Tốc độ giảng dạy của giảng viên như thế nào?', N'Quá nhanh;Hơi nhanh;Vừa phải;Hơi chậm;Quá chậm', N'Khảo sát Cấu trúc Dữ liệu và Giải Thuật HK241_CO2003_L01 Nguyễn Thế Gia Bảo'),
+(N'Chất lượng video bài giảng (nếu có)?', N'Hình ảnh/Âm thanh tốt;Chấp nhận được;Kém', N'Khảo sát Cấu trúc Dữ liệu và Giải Thuật HK241_CO2003_L01 Nguyễn Thế Gia Bảo');
+
+-- TraLoiKhaoSat
+INSERT INTO Survey.TraLoi (MaNguoiDung, MaCauHoiKhaoSat, NoiDungTraLoi) VALUES
+('huy.lugiaHCMUT2', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%truyền đạt%' AND MaKhaoSat = N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'), N'Rất tốt'),
+('huy.lugiaHCMUT2', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%Tài liệu môn học%' AND MaKhaoSat = N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'), N'Đầy đủ'),
+('huy.lugiaHCMUT2', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%góp ý gì%' AND MaKhaoSat = N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'), N'Nên bổ sung thêm bài tập thực hành SQL nâng cao.'),
+('hiep.lehoangGG', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%truyền đạt%' AND MaKhaoSat = N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'), N'Khá'),
+('hiep.lehoangGG', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%Tài liệu môn học%' AND MaKhaoSat = N'Khảo sát Hệ cơ sở Dữ liệu HK251_CO2013_L01 Lê Văn Duy'), N'Tạm ổn'),
+('bao.legia251', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%bài tập lớn%' AND MaKhaoSat = N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'), N'Hơi khó'),
+('bao.legia251', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%hỗ trợ của giảng viên%' AND MaKhaoSat = N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'), N'Rất nhiệt tình'),
+('bao.legia251', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%Đề xuất%' AND MaKhaoSat = N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'), N'Nên cho phép sinh viên tự chọn nhóm thay vì random.'),
+('duy.nguyenthe001', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%bài tập lớn%' AND MaKhaoSat = N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'), N'Hoàn toàn phù hợp'),
+('duy.nguyenthe001', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%hỗ trợ của giảng viên%' AND MaKhaoSat = N'Khảo sát Công nghệ phần mềm HK251_CO3001_L01 Nguyễn Thế Gia Bảo'), N'Bình thường'),
+('huy.lugiaHCMUT2', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%Tốc độ giảng dạy%' AND MaKhaoSat = N'Khảo sát Cấu trúc Dữ liệu và Giải Thuật HK241_CO2003_L01 Nguyễn Thế Gia Bảo'), N'Vừa phải'),
+('huy.lugiaHCMUT2', (SELECT MaCauHoiKhaoSat FROM Survey.CauHoiKhaoSat WHERE NoiDungCauHoi LIKE N'%Chất lượng video%' AND MaKhaoSat = N'Khảo sát Cấu trúc Dữ liệu và Giải Thuật HK241_CO2003_L01 Nguyễn Thế Gia Bảo'), N'Hình ảnh/Âm thanh tốt');

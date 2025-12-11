@@ -108,6 +108,11 @@ create table Management.MucTaiLieu(
     MaNguoiTao      varchar(50)
 );
 
+ALTER TABLE Management.TaiLieuMonHoc
+ADD CONSTRAINT CK_LoaiTaiLieu 
+CHECK (LoaiTaiLieu IN (N'tài liệu dạng tệp', N'link tham khảo', N'video bài giảng'));
+GO
+
 -- Bảng Sở hữu (Liên kết Lớp - Mục - Tài liệu)
 create table Management.SoHuu(
     MaLopHoc    varchar(20),
@@ -287,6 +292,11 @@ create table Survey.KhaoSat(
     ThoiGianKetThuc datetime2,
     constraint PK_KhaoSat primary key (TenKhaoSat)
 );
+
+ALTER TABLE Survey.KhaoSat
+ADD CONSTRAINT CK_ThoiGian_KhaoSat
+CHECK (DATEDIFF(DAY, ThoigianBatDau, ThoiGianKetThuc) >= 7);
+GO
 
 -- Bảng Câu hỏi khảo sát
 create table Survey.CauHoiKhaoSat(

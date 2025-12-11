@@ -33,13 +33,13 @@ export default function Header() {
   // Xác định link "Các khóa học của tôi" dựa trên Role
   const myCoursesLink = user?.role === 'GiangVien' 
     ? '/GiangVien/LopHoc' 
-    : '/SinhVien/LopHoc';
+    : '/SinhVien/LopHoc';    
 
   const navItems = [
-    { name: 'Trang chủ', href: '#'},
-    { name: 'Bảng Điều khiển', href: '/SinhVien/Dashboard' },
+    { name: 'Trang chủ', href: '/'},
+    ...(user?.role === 'SinhVien' ? [{ name: 'Bảng Điều khiển', href: '/SinhVien/Dashboard' }] : []),
     { name: 'Các khoá học của tôi', href: myCoursesLink }, // Link động
-    { name: 'BKeL Cũ', href: '#' },
+    // { name: 'BKeL Cũ', href: '#' },
     { name: 'Khóa học', href: '/MonHoc' },
   ];
 
