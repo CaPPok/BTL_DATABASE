@@ -45,6 +45,8 @@ begin catch
     throw;
 end catch
 go
+exec Management.PR_InsertLopHoc @MaLopHoc = 'HK252_CO2013_L01', @MaMonHoc = 'CO2013', @MaNguoiDay = 'bao.nguyenthegiabao01';
+go
 -----------------------------------------------------------------------
 -- Procedure Update                                                  --
 -----------------------------------------------------------------------
@@ -99,57 +101,57 @@ begin catch
     throw;
 end catch
 go
+exec Management.PR_UpdateLopHoc @MaLopHoc = 'HK252_CO2013_L01', @MaMonHoc = 'CO2013', @MaKhaoSat = null, @MaNguoiDay = 'hoang.nguyenlelu99';
+go
 -----------------------------------------------------------------------
 -- Procedure Delete                                                  --
 -----------------------------------------------------------------------
 create or alter procedure Management.PR_DeleteLopHoc
     @MaLopHoc        varchar(20)
 as
-begin
-    begin try
-        -- Check mã lớp học
-        if @MaLopHoc is null
-        begin
-            throw 50001, N'[Error]: Mã lớp học không được phép NULL!', 1;
-        end
-        if not exists(select 1 from Management.LopHoc where MaLopHoc = @MaLopHoc)
-        begin
-            throw 50001, N'[Error]: Mã lớp học này không tồn tại trong cơ sở dữ liệu!', 3;
-        end
-        -- Check trạng thái lớp học
-        if exists(select 1 from Management.ThamGiaLopHoc where MaLopHoc = @MaLopHoc)
-        begin
-            throw 50005, N'[Error]: Lớp học đang có sinh viên nên không thể xoá!', 1;
-        end
-        if exists(select 1 from Testing.BaiKiemTra where MaLopHoc = @MaLopHoc)
-        begin
-            throw 50005, N'[Error]: Lớp học đang có các bài kiểm tra nên không thể xoá!', 2;
-        end
-        if exists(select 1 from Exercise.Submission where MaLopHoc = @MaLopHoc)
-        begin
-            throw 50005, N'[Error]: Lớp học đang có các bài tập nên không thể xoá!', 3;
-        end
-        if exists(select 1 from Forum.DienDan where MaLopHoc = @MaLopHoc)
-        begin
-            throw 50005, N'[Error]: Lớp học đang chứa các diễn đàn nên không thể xoá!', 4;
-        end
-        if exists(select 1 from Management.MucTaiLieu where MaLopHoc = @MaLopHoc)
-        begin
-            throw 50005, N'[Error]: Lớp học đang có các tài liệu nên không thể xoá!', 5;
-        end
-        if exists(select 1 from Management.LopHoc where MaLopHoc = @MaLopHoc and MaKhaoSat is not null)
-        begin
-            throw 50005, N'[Error]: Lớp học đang có khảo sát nên không thể xoá!', 6;
-        end
-        -- Delete Lớp học
-        delete from Management.LopHoc
-        where MaLopHoc = @MaLopHoc;
-        print N'[Notify]: Xoá lớp học thành công!';
-    end try
-    begin catch
-        throw;
-    end catch
-end
------------------------------------------------------------------------
--- Test Procedure                                                    --
------------------------------------------------------------------------
+begin try
+    -- Check mã lớp học
+    if @MaLopHoc is null
+    begin
+        throw 50001, N'[Error]: Mã lớp học không được phép NULL!', 1;
+    end
+    if not exists(select 1 from Management.LopHoc where MaLopHoc = @MaLopHoc)
+    begin
+        throw 50001, N'[Error]: Mã lớp học này không tồn tại trong cơ sở dữ liệu!', 3;
+    end
+    -- Check trạng thái lớp học
+    if exists(select 1 from Management.ThamGiaLopHoc where MaLopHoc = @MaLopHoc)
+    begin
+        throw 50005, N'[Error]: Lớp học đang có sinh viên nên không thể xoá!', 1;
+    end
+    if exists(select 1 from Testing.BaiKiemTra where MaLopHoc = @MaLopHoc)
+    begin
+        throw 50005, N'[Error]: Lớp học đang có các bài kiểm tra nên không thể xoá!', 2;
+    end
+    if exists(select 1 from Exercise.Submission where MaLopHoc = @MaLopHoc)
+    begin
+        throw 50005, N'[Error]: Lớp học đang có các bài tập nên không thể xoá!', 3;
+    end
+    if exists(select 1 from Forum.DienDan where MaLopHoc = @MaLopHoc)
+    begin
+        throw 50005, N'[Error]: Lớp học đang chứa các diễn đàn nên không thể xoá!', 4;
+    end
+    if exists(select 1 from Management.MucTaiLieu where MaLopHoc = @MaLopHoc)
+    begin
+        throw 50005, N'[Error]: Lớp học đang có các tài liệu nên không thể xoá!', 5;
+    end
+    if exists(select 1 from Management.LopHoc where MaLopHoc = @MaLopHoc and MaKhaoSat is not null)
+    begin
+        throw 50005, N'[Error]: Lớp học đang có khảo sát nên không thể xoá!', 6;
+    end
+    -- Delete Lớp học
+    delete from Management.LopHoc
+    where MaLopHoc = @MaLopHoc;
+    print N'[Notify]: Xoá lớp học thành công!';
+end try
+begin catch
+    throw;
+end catch
+go
+exec Management.PR_DeleteLopHoc @MaLopHoc = 'HK252_CO2013_L01';
+go

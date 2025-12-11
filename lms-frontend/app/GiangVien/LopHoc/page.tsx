@@ -54,6 +54,8 @@ export default function GiangVienLopHocPage() {
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [originalMonHoc, setOriginalMonHoc] = useState<string>(''); // Lưu môn học ban đầu
+  const [originalMaNguoiDay, setOriginalMaNguoiDay] = useState<string>(''); // Lưu mã giảng viên ban đầu
+  const [originalLopHoc, setOriginalLopHoc] = useState<LopHoc | null>(null); // Lưu object lớp ban đầu
   
   // --- STATE DROPDOWN ---
   const [monHocList, setMonHocList] = useState<MonHoc[]>([]);
@@ -168,17 +170,24 @@ export default function GiangVienLopHocPage() {
 
   // --- HÀM SỬA LỚP HỌC ---
   const handleSua = (lop: LopHoc) => {
+    console.log("handleSua called with lop:", lop);
+    console.log("currentUser:", currentUser);
     setModalMode('edit');
     setFormData({
       maLopHoc: lop.maLopHoc,
       maMonHoc: lop.maMonHoc,
-      maNguoiDay: currentUser?.maNguoiDung || '', // Luôn dùng mã giảng viên hiện tại
+      maNguoiDay: currentUser?.maNguoiDung || '', // Hiển thị mã người dùng hiện tại
       maKhaoSat: lop.maKhaoSat || '',
     });
     setOriginalMonHoc(lop.maMonHoc); // Lưu môn học ban đầu
+    const originalTeacher = currentUser?.maNguoiDung || ''; // Mã người dùng hiện tại là "cũ"
+    setOriginalMaNguoiDay(originalTeacher); // Lưu mã giảng viên ban đầu
+    setOriginalLopHoc(lop); // Lưu object lớp ban đầu
+    console.log("originalMaNguoiDay (currentUser) set to:", originalTeacher);
     setEditingId(lop.maLopHoc);
     setShowModal(true);
     setError("");
+    setSuccessMessage(""); // Xóa thông báo thành công cũ khi mở modal sửa
   };
 
   // --- HÀM XÓA LỚP HỌC ---
@@ -205,9 +214,27 @@ export default function GiangVienLopHocPage() {
 
   // --- HÀM SUBMIT FORM ---
   const handleSubmit = () => {
+    console.log("handleSubmit called, modalMode:", modalMode);
+    
     if (!formData.maLopHoc || !formData.maMonHoc || !formData.maNguoiDay) {
       setError("Vui lòng điền đầy đủ thông tin!");
       return;
+    }
+
+    // Khi sửa lớp học, phải có thay đổi mã giảng viên (chuyển giao lớp)
+    if (modalMode === 'edit') {
+      const currentMa = formData.maNguoiDay.trim();
+      const currentUserMa = (currentUser?.maNguoiDung || '').trim();
+      
+      console.log("Validation check:", { currentMa, currentUserMa, isEqual: currentMa === currentUserMa });
+      
+      if (currentMa === currentUserMa) {
+        setError("Vui lòng nhập mã giảng viên cần chuyển giao lớp học");
+        console.log("Validation FAILED - blocked submit (nhập mã người dùng hiện tại)");
+        return;
+      }
+      
+      console.log("Validation PASSED - proceeding with API call");
     }
 
     if (modalMode === 'add') {
@@ -247,6 +274,7 @@ export default function GiangVienLopHocPage() {
         .then(res => res.json())
         .then(data => {
           if (data.status === 'success') {
+            setError(""); // Clear any previous error
             setSuccessMessage(data.message);
             setTimeout(() => setSuccessMessage(""), 3000);
             setShowModal(false);
@@ -491,8 +519,20 @@ export default function GiangVienLopHocPage() {
                   <input
                     type="text"
                     value={formData.maNguoiDay}
-                    onChange={(e) => setFormData({ ...formData, maNguoiDay: e.target.value })}
-                    placeholder="Nhập mã giảng viên"
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setFormData({ ...formData, maNguoiDay: newValue });
+                      // So sánh với mã người dùng hiện tại
+                      const currentUserMa = currentUser?.maNguoiDung || '';
+                      console.log("Input changed:", { newValue: newValue.trim(), currentUserMa: currentUserMa.trim() });
+                      if (newValue.trim() !== currentUserMa.trim()) {
+                        setError("");
+                      } else {
+                        // Nếu nhập lại mã người dùng hiện tại, hiển thị lỗi
+                        setError("Vui lòng nhập mã giảng viên cần chuyển giao lớp học");
+                      }
+                    }}
+                    placeholder="Nhập mã giảng viên cần chuyển giao"
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 bg-blue-50 focus:outline-none focus:border-[#0073B7] focus:bg-white"
                   />
                 )}
