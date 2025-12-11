@@ -177,12 +177,22 @@ public class LopHocService {
     @Transactional
     public void suaLopHoc(String maLopHoc, String maMonHoc, String maNguoiDay) {
         try {
-            // LUÔN lấy maKhaoSat hiện tại từ database để giữ nguyên (không cho sửa)
-            String sqlGetKhaoSat = "SELECT MaKhaoSat FROM Management.LopHoc WHERE MaLopHoc = :maLopHoc";
-            Query queryGetKhaoSat = entityManager.createNativeQuery(sqlGetKhaoSat);
-            queryGetKhaoSat.setParameter("maLopHoc", maLopHoc);
-            Object existingMaKhaoSat = queryGetKhaoSat.getSingleResult();
-            String maKhaoSat = existingMaKhaoSat != null ? (String) existingMaKhaoSat : null;
+            // Lấy thông tin lớp học cũ (bao gồm maKhaoSat, maNguoiDay cũ)
+            String sqlGetOldData = "SELECT MaKhaoSat, MaNguoiDay FROM Management.LopHoc WHERE MaLopHoc = :maLopHoc";
+            Query queryGetOldData = entityManager.createNativeQuery(sqlGetOldData);
+            queryGetOldData.setParameter("maLopHoc", maLopHoc);
+            Object[] oldData = (Object[]) queryGetOldData.getSingleResult();
+            
+            String maKhaoSat = oldData[0] != null ? (String) oldData[0] : null;
+            String oldMaNguoiDay = (String) oldData[1];
+            
+            // Nếu maNguoiDay thay đổi và có khảo sát, cập nhật tên khảo sát
+            if (maKhaoSat != null && !maKhaoSat.trim().isEmpty()) {
+                if (!maNguoiDay.equals(oldMaNguoiDay)) {
+                    // updateSurveyName trả về tên khảo sát mới
+                    maKhaoSat = updateSurveyName(maLopHoc, maKhaoSat, maMonHoc, maNguoiDay);
+                }
+            }
             
             String sql = "EXEC Management.PR_UpdateLopHoc @MaLopHoc = :maLopHoc, @MaKhaoSat = :maKhaoSat, @MaMonHoc = :maMonHoc, @MaNguoiDay = :maNguoiDay";
             Query query = entityManager.createNativeQuery(sql);
@@ -194,6 +204,56 @@ public class LopHocService {
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi sửa lớp học: " + e.getMessage(), e);
         }
+    }
+
+    // --- 4.1. HÀM CẬP NHẬT TÊN KHẢO SÁT KHI THAY ĐỔI MÔN/GIÁO VIÊN ---
+    private String updateSurveyName(String maLopHoc, String oldTenKhaoSat, String maMonHoc, String maNguoiDay) {
+        // Lấy tên môn học mới
+        String sqlMonHoc = "SELECT TenMonHoc FROM Management.MonHoc WHERE MaMonHoc = :maMonHoc";
+        Query queryMonHoc = entityManager.createNativeQuery(sqlMonHoc);
+        queryMonHoc.setParameter("maMonHoc", maMonHoc);
+        String tenMonHoc = (String) queryMonHoc.getSingleResult();
+        
+        // Lấy tên giáo viên mới
+        String sqlGiangVien = "SELECT HoTen FROM Management.NguoiDung WHERE MaNguoiDung = :maNguoiDay";
+        Query queryGiangVien = entityManager.createNativeQuery(sqlGiangVien);
+        queryGiangVien.setParameter("maNguoiDay", maNguoiDay);
+        String tenGiangVien = (String) queryGiangVien.getSingleResult();
+        
+        // Tạo tên khảo sát mới với format: Khảo sát học phần {Tên môn học} ({Mã lớp học}) {Tên người dạy}
+        String newTenKhaoSat = "Khảo sát học phần " + tenMonHoc + " (" + maLopHoc + ") " + tenGiangVien;
+        
+        // Kiểm tra xem khảo sát cũ có tồn tại không
+        String sqlCheck = "SELECT COUNT(*) FROM Survey.KhaoSat WHERE TenKhaoSat = :oldTenKhaoSat";
+        Query queryCheck = entityManager.createNativeQuery(sqlCheck);
+        queryCheck.setParameter("oldTenKhaoSat", oldTenKhaoSat);
+        Long count = ((Number) queryCheck.getSingleResult()).longValue();
+        
+        if (count > 0) {
+            // Step 1: Set MaKhaoSat = NULL trong LopHoc để xóa foreign key constraint
+            String sqlSetNull = "UPDATE Management.LopHoc SET MaKhaoSat = NULL WHERE MaKhaoSat = :oldTenKhaoSat";
+            Query querySetNull = entityManager.createNativeQuery(sqlSetNull);
+            querySetNull.setParameter("oldTenKhaoSat", oldTenKhaoSat);
+            querySetNull.executeUpdate();
+            
+            // Step 2: Cập nhật tên khảo sát trong database
+            String sqlUpdate = "UPDATE Survey.KhaoSat SET TenKhaoSat = :newTenKhaoSat WHERE TenKhaoSat = :oldTenKhaoSat";
+            Query queryUpdate = entityManager.createNativeQuery(sqlUpdate);
+            queryUpdate.setParameter("newTenKhaoSat", newTenKhaoSat);
+            queryUpdate.setParameter("oldTenKhaoSat", oldTenKhaoSat);
+            queryUpdate.executeUpdate();
+            
+            // Step 3: Set MaKhaoSat = newTenKhaoSat trong LopHoc
+            String sqlSetNewValue = "UPDATE Management.LopHoc SET MaKhaoSat = :newTenKhaoSat WHERE MaKhaoSat IS NULL AND MaLopHoc IN (SELECT MaLopHoc FROM Management.LopHoc WHERE MaMonHoc = :maMonHoc AND MaNguoiDay = :maNguoiDay)";
+            Query querySetNewValue = entityManager.createNativeQuery(sqlSetNewValue);
+            querySetNewValue.setParameter("newTenKhaoSat", newTenKhaoSat);
+            querySetNewValue.setParameter("maMonHoc", maMonHoc);
+            querySetNewValue.setParameter("maNguoiDay", maNguoiDay);
+            querySetNewValue.executeUpdate();
+        }
+        
+        // Trả về tên khảo sát mới (hoặc tên cũ nếu không tồn tại)
+        return newTenKhaoSat;
     }
 
     // --- 5. HÀM XÓA LỚP HỌC (Gọi Procedure PR_DeleteLopHoc) ---
@@ -245,12 +305,22 @@ public class LopHocService {
             insertQuery.setParameter("thoiGianKetThuc", thoiGianKetThuc);
             insertQuery.executeUpdate();
 
-            // 2. Cập nhật MaKhaoSat cho lớp học
-            String updateLopHocSql = "UPDATE Management.LopHoc SET MaKhaoSat = :tenKhaoSat WHERE MaLopHoc = :maLopHoc";
-            Query updateQuery = entityManager.createNativeQuery(updateLopHocSql);
-            updateQuery.setParameter("tenKhaoSat", tenKhaoSat);
-            updateQuery.setParameter("maLopHoc", maLopHoc);
-            updateQuery.executeUpdate();
+            // 2. Lấy maMonHoc và maNguoiDay hiện tại của lớp học
+            String sqlGetData = "SELECT MaMonHoc, MaNguoiDay FROM Management.LopHoc WHERE MaLopHoc = :maLopHoc";
+            Query queryGetData = entityManager.createNativeQuery(sqlGetData);
+            queryGetData.setParameter("maLopHoc", maLopHoc);
+            Object[] data = (Object[]) queryGetData.getSingleResult();
+            String maMonHoc = (String) data[0];
+            String maNguoiDay = (String) data[1];
+
+            // 3. Cập nhật MaKhaoSat cho lớp học bằng Procedure
+            String procedureSql = "EXEC Management.PR_UpdateLopHoc @MaLopHoc = :maLopHoc, @MaKhaoSat = :tenKhaoSat, @MaMonHoc = :maMonHoc, @MaNguoiDay = :maNguoiDay";
+            Query procedureQuery = entityManager.createNativeQuery(procedureSql);
+            procedureQuery.setParameter("maLopHoc", maLopHoc);
+            procedureQuery.setParameter("tenKhaoSat", tenKhaoSat);
+            procedureQuery.setParameter("maMonHoc", maMonHoc);
+            procedureQuery.setParameter("maNguoiDay", maNguoiDay);
+            procedureQuery.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi tạo khảo sát: " + e.getMessage(), e);
         }

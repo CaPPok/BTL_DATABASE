@@ -466,7 +466,8 @@ export default function GiangVienLopHocPage() {
                 <select
                   value={formData.maMonHoc}
                   onChange={(e) => setFormData({ ...formData, maMonHoc: e.target.value })}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 bg-blue-50 focus:outline-none focus:border-[#0073B7] focus:bg-white"
+                  disabled={modalMode === 'edit'}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 bg-blue-50 focus:outline-none focus:border-[#0073B7] focus:bg-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                 >
                   <option value="">-- Chọn môn học --</option>
                   {monHocList.map(mon => (
