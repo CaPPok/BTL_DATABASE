@@ -229,28 +229,29 @@ export default function ClassDetailPage() {
               </h2>
             </div>
           </div>
-
-          {/* Nút Thêm mục */}
-          <button
-            onClick={() => {
-              // TODO: Mở modal thêm mục
-              alert('Chức năng thêm mục sẽ được triển khai');
-            }}
-            className="flex items-center gap-2 bg-[#0073B7] hover:bg-[#005a91] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-          >
-            <Plus size={18} />
-            Thêm mục
-          </button>
-
-          {!classData?.maKhaoSat && (
+          <div className="flex items-center gap-2 mt-8">
+            {/* Nút Thêm mục */}
             <button
-              onClick={handleOpenSurveyModal}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+              onClick={() => {
+                // TODO: Mở modal thêm mục
+                alert('Chức năng thêm mục sẽ được triển khai');
+              }}
+              className="flex items-center p-1 bg-[#0073B7] hover:bg-[#005a91] text-white rounded-[10px] text-sm font-medium transition-colors"
             >
               <Plus size={18} />
-              Tạo khảo sát
+              Thêm mục
             </button>
-          )}
+
+            {!classData?.maKhaoSat && (
+              <button
+                onClick={handleOpenSurveyModal}
+                className="flex items-center p-1 bg-green-600 hover:bg-green-700 text-white rounded-[10px] text-sm font-medium transition-colors"
+              >
+                <Plus size={18} />
+                Tạo khảo sát
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="max-w-5xl mx-auto">

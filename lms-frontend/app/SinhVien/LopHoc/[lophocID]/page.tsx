@@ -27,11 +27,20 @@ interface MucTaiLieu {
   moTa: string;
 }
 
+interface KhaoSat {
+  maKhaoSat: string;
+  tenKhaoSat: string;
+  moTa: string;
+  thoigianBatDau: string;
+  thoiGianKetThuc: string;
+}
+
 interface ClassDetail {
   maLopHoc: string;
   tenMonHoc: string;
   tenGiangVien: string;
   maNguoiDung: string;
+  khaoSat?: KhaoSat;
   danhSachMuc: MucTaiLieu[];
 }
 
@@ -118,6 +127,45 @@ export default function ClassDetailPage() {
                 
                 {/* 2. DANH SÁCH CÁC MỤC (SECTIONS) */}
                 <div className="space-y-6">
+                {classData?.khaoSat && (
+                  <div className="bg-white rounded-[20px] shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="flex gap-4 mb-3 items-start justify-between p-4">
+                      <div className="flex gap-4 flex-1">
+                        <button 
+                          onClick={() => toggleSection(-1)}
+                          className="p-1 my-6 bg-gray-50 border-[2px] border-gray-100 rounded-full hover:bg-gray-100 hover:border-[#0073B7] transition-colors flex-shrink-0"
+                        >
+                          {expandedSections[-1] ? (
+                            <ChevronDown size={24} className="text-[#0073B7]" />
+                          ) : (
+                            <ChevronRight size={24} className="text-[#0073B7]" />
+                          )}
+                        </button>
+                        <div className="space-y-1 flex-1">                            
+                          <h3 className="font-bold text-lg text-gray-800">
+                            {classData.khaoSat.tenKhaoSat}
+                          </h3>
+                          
+                          {classData.khaoSat.moTa && (
+                            <p className="text-sm text-gray-400 font-normal">
+                              {classData.khaoSat.moTa}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Nội dung khảo sát */}
+                    {expandedSections[-1] && (
+                      <div className="px-4 pb-4">
+                        <div className="space-y-2">
+                          <p className="text-sm"><strong>Thời gian bắt đầu:</strong> {new Date(classData.khaoSat.thoigianBatDau).toLocaleString('vi-VN')}</p>
+                          <p className="text-sm"><strong>Thời gian kết thúc:</strong> {new Date(classData.khaoSat.thoiGianKetThuc).toLocaleString('vi-VN')}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {classData.danhSachMuc.map((muc) => {
                     const isExpanded = expandedSections[muc.maMuc];
 

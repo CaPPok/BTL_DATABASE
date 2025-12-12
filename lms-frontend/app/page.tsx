@@ -12,7 +12,6 @@ export default function Home() {
     { name: "Lữ Hoàng Duy", role: "2310474" },
     { name: "Hoàng Thế Huy", role: "2311142" },
     { name: "Nguyễn Văn Hiệp", role: "2311012" },
-    { name: "AI", role: "Gemini - Claude - ChatGPT" },
   ];
 
   return (
